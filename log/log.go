@@ -6,7 +6,7 @@ package log
 // package log defines the logger for the app
 
 import (
-	"io"
+	"bufio"
 	"log/slog"
 	"os"
 	"runtime"
@@ -32,10 +32,15 @@ func UsePrettyInfoLogger() {
 
 // JobLogger is a no-color version of the PrettyInfoLogger that is created
 // to append to the job log folder
-func JobLogger(outWriter io.Writer) *slog.Logger {
-	return slog.New(
-		console.NewHandler(outWriter,
+func JobLogger(path string) (*slog.Logger, *os.File) {
+	fileHandle, _ := os.OpenFile(path, os.O_APPEND, 0666)
+	writer := bufio.NewWriter(fileHandle)
+
+	newLogger := slog.New(
+		console.NewHandler(writer,
 			&console.HandlerOptions{Level: slog.LevelInfo, NoColor: true}))
+
+	return newLogger, fileHandle
 }
 
 func UseJSONInfoLogger() {

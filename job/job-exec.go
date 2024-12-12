@@ -5,9 +5,12 @@ package job
 
 import (
 	"bytes"
+	"fmt"
 	"os/exec"
 	"strings"
 	"time"
+
+	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/log"
 )
 
 var tsgApp = "msgtsg-node"
@@ -31,7 +34,7 @@ func (j *JobInfo) getVersion() (version string, errMsg string) {
 func (j *JobInfo) runJob(jobs *JobManagement) {
 	var outBuf bytes.Buffer
 	var errBuf bytes.Buffer
-
+	jlog := log.JobLogger(string(j.joblogPath))
 	//run the app & capture stdout
 	cmd := exec.Command(tsgApp, optVersion)
 	cmd.Stdout = &outBuf
@@ -39,10 +42,13 @@ func (j *JobInfo) runJob(jobs *JobManagement) {
 
 	start := time.Now().UnixMilli()
 	j.ActualStartDate = j.TimeStamp()
+	jlog.info(fmt.Sprintf("starting job at %s", j.ActualStartDate))
 	cmd.Run()
 	end := time.Now().UnixMilli()
 	j.ActualEndDate = j.TimeStamp()
 	j.ActualDuration = int(end - start)
+	jlog.info(fmt.Sprintf("ending job at %s", j.ActualEndDate))
+	jlog.info(fmt.Sprintf("duration of %d ms", j.ActualDuration))
 
 	//clear the running job lock
 	jobs.JobRunning = nil

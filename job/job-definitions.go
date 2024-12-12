@@ -112,6 +112,7 @@ type JobInfo struct {
 	jobId        int
 	folderPath   URL
 	lockfilePath URL
+	joblogPath   URL
 	meta         string
 	state        StateEnum
 	firstSeenAt  string
@@ -152,7 +153,9 @@ type JobManagement struct {
 	Queue        []*JobInfo
 	Folder       string
 	LockFileName string
-	Wg           sync.WaitGroup
+	JobLogName   string
+
+	Wg sync.WaitGroup
 }
 
 // SMPTE ST2126 timestamp

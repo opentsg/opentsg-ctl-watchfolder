@@ -61,6 +61,7 @@ var mainCmd = &cobra.Command{
 		jobs := &job.JobManagement{
 			Folder:       jobsFolder,
 			LockFileName: "_status.lock",
+			JobLogName:   "_ctl-watchfolder.log",
 		}
 
 		//init the jobs to fast start the polling

@@ -34,6 +34,7 @@ func (jobs *JobManagement) ParseJobs() {
 		tmp := JobInfo{
 			folderPath:   URL(jFolder),
 			lockfilePath: URL(filepath.Join(jFolder, jobs.LockFileName)),
+			joblogPath:   URL(filepath.Join(jFolder, jobs.JobLogName)),
 			Id:           URL(absFolder),
 		}
 		status, meta, err := tmp.ReadLockFileMetadata()
