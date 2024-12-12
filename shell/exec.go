@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"os"
 	"os/exec"
-
+	"sync"
 )
 
 // ExecControl is a simple structure to  control the output of the [ExecAsync]
@@ -47,10 +47,10 @@ func Exec(command string, args []string, env map[string]string, ctlIo *ExecContr
 	}
 	exe := ExecAsync(command, args, env, ctl)
 	// wait for the end of job communication on the channel
-	_, open := <-ctl.ProcessState
-	if open {
-		close(ctl.ProcessState)
-	}
+	// _, open := <-ctl.ProcessState
+	// if open {
+	// 	close(ctl.ProcessState)
+	// }
 	return exe
 }
 
@@ -94,14 +94,14 @@ func ExecAsync(command string, args []string, env map[string]string, ctl *ExecCo
 		return exe
 	}
 
-	// var wg sync.WaitGroup
-	// wg.Add(1)
-	// go func() {
-	// 	_, errStdout = rewriteStdout(ctl.StdOutWriter, execStdOut)
-	// 	_, errStderr = rewriteStdout(ctl.StdErrWriter, execStdErr)
-	// 	wg.Done()
-	// }()
-	// wg.Wait()
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		_, errStdout = rewriteStdout(ctl.StdOutWriter, execStdOut)
+		_, errStderr = rewriteStdout(ctl.StdErrWriter, execStdErr)
+		wg.Done()
+	}()
+	wg.Wait()
 
 	// execute the job and create the control channel
 	go func() {

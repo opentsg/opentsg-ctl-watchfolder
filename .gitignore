@@ -2,7 +2,7 @@
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
 #
 # Binaries for programs and plugins
-jobs
+jobs/
 opentsg-ctl-mk8
 *.exe
 *.exe~
@@ -20,6 +20,7 @@ tmp/*
 !*/readme.md
 libxml*
 __debug_*
+__TEST__/job*
 
 # Mac cruft
 .DS_Store
