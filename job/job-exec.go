@@ -4,10 +4,13 @@
 package job
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
+	"io"
 	"os/exec"
 	"strings"
+	"sync"
 	"time"
 
 	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/log"
@@ -31,6 +34,21 @@ func (j *JobInfo) getVersion() (version string, errMsg string) {
 	return strings.Trim(outBuf.String(), c), strings.Trim(errBuf.String(), c)
 }
 
+func jobNodeLogger(wg *sync.WaitGroup, buf io.Writer, rc io.ReadCloser, name string) {
+	jLog, jobFile := log.JobLogger(string(j.jobLogPath))
+	defer jobFile.Close()
+	scanner := bufio.NewScanner(rc)
+	for scanner.Scan() {
+		line := scanner.Text()
+		jLog.Info(name, line)
+		fmt.Fprintln(buf, line)
+	}
+	if err := scanner.Err(); err != nil {
+		jLog.Error("cannot redirect output to file", "err", err)
+	}
+	wg.Done()
+}
+
 func (j *JobInfo) runJob(jobs *JobManagement) {
 	var outBuf bytes.Buffer
 	var errBuf bytes.Buffer
@@ -45,7 +63,24 @@ func (j *JobInfo) runJob(jobs *JobManagement) {
 	start := time.Now().UnixMilli()
 	j.ActualStartDate = j.TimeStamp()
 	jLog.Info(fmt.Sprintf("starting job at %s", j.ActualStartDate))
-	cmd.Run()
+
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return errors.Wrap(err, "failed to get stdout pipe")
+	}
+
+	j.Wg.Add(1)
+	// start the logging goroutine - tee to stdout and the job's log file
+	go jobNodeLogger(&wg, &outBuf, stdout, "stdout")
+	// run the node while logging to the log file and stdout
+	err = cmd.Run()
+	if err != nil {
+		return errors.Wrap(err, "command failed")
+	}
+	// await  the node's stdout closing
+	wg.Wait()
+
+	// log the end times
 	end := time.Now().UnixMilli()
 	j.ActualEndDate = j.TimeStamp()
 	j.ActualDuration = int(end - start)
