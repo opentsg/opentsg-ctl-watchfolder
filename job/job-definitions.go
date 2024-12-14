@@ -89,34 +89,23 @@ type JobInfo struct {
 	state        StateEnum
 	firstSeenAt  string
 	queuedAt     string
+	wg           sync.WaitGroup
 
 	//the following parameters are external and follow SMPTE ST2126:2020
-	// URL pointing to the job instance in the job processor
-	Id URL
-	// Indicates the job type
-	Type string
-	//URL pointing to the job profile used by the job
-	Profile URL
-	//Name of the job profile used by the job.
-	ProfileName string
-	//URL pointing to the jobExecution instance in the job processor
-	Execution URL
-	// URL pointing to the jobAssignment instance in the executing service
-	Assignment URL
-	// Collection of input parameters that were provided in the job when it was created
-	Input string
-	//Status of the job
-	Status JobStatusEnum
-	// Detailed info about the problem which caused the job. nil when not failed
-	Error ErrorInfo
-	// Date in ISO 8601 format when job was queued for processing
-	ActualStartDate string
-	//Date in ISO 8601 format when job completed, failed or canceled
-	ActualEndDate string
-	//Job duration in milliseconds
-	ActualDuration int
-	// Collection of output results of the job that was executed
-	Output OutputInfo
+	Id              URL           // URL pointing to the job instance in the job processor
+	Type            string        // Indicates the job type
+	Profile         URL           //URL pointing to the job profile used by the job
+	ProfileName     string        //Name of the job profile used by the job.
+	Execution       URL           //URL pointing to the jobExecution instance in the job processor
+	Assignment      URL           // URL pointing to the jobAssignment instance in the executing service
+	Input           string        // Collection of input parameters that were provided in the job when it was created
+	Status          JobStatusEnum //Status of the job
+	Error           ErrorInfo     // Detailed info about the problem which caused the job. nil when not failed
+	ActualStartDate string        // Date in ISO 8601 format when job was queued for processing
+	ActualEndDate   string        //Date in ISO 8601 format when job completed, failed or canceled
+	ActualDuration  int           //Job duration in milliseconds
+	Output          OutputInfo    // Collection of output results of the job that was executed
+
 }
 
 type JobManagement struct {

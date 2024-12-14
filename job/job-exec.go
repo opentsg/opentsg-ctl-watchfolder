@@ -34,14 +34,13 @@ func (j *JobInfo) getVersion() (version string, errMsg string) {
 	return strings.Trim(outBuf.String(), c), strings.Trim(errBuf.String(), c)
 }
 
-func jobNodeLogger(wg *sync.WaitGroup, buf io.Writer, rc io.ReadCloser, name string) {
+func (j *JobInfo) jobNodeLogger(wg *sync.WaitGroup, buf io.Writer, rc io.ReadCloser) {
 	jLog, jobFile := log.JobLogger(string(j.jobLogPath))
 	defer jobFile.Close()
 	scanner := bufio.NewScanner(rc)
 	for scanner.Scan() {
 		line := scanner.Text()
-		jLog.Info(name, line)
-		fmt.Fprintln(buf, line)
+		jLog.Info(line)
 	}
 	if err := scanner.Err(); err != nil {
 		jLog.Error("cannot redirect output to file", "err", err)
@@ -49,36 +48,42 @@ func jobNodeLogger(wg *sync.WaitGroup, buf io.Writer, rc io.ReadCloser, name str
 	wg.Done()
 }
 
-func (j *JobInfo) runJob(jobs *JobManagement) {
+func (j *JobInfo) runJob(jobs *JobManagement) error {
 	var outBuf bytes.Buffer
-	var errBuf bytes.Buffer
+	// var errBuf bytes.Buffer
+
 	// make a logger for the user's job and close the file handle when done
 	jLog, jobFile := log.JobLogger(string(j.jobLogPath))
 	defer jobFile.Close()
-	//run the app & capture stdout
+
+	//setup the command to run
 	cmd := exec.Command(tsgApp, optVersion)
-	cmd.Stdout = &outBuf
-	cmd.Stderr = &errBuf
+
+	// pipe stdout
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return fmt.Errorf("failed to get stdout pipe: %w", err)
+	}
 
 	start := time.Now().UnixMilli()
 	j.ActualStartDate = j.TimeStamp()
 	jLog.Info(fmt.Sprintf("starting job at %s", j.ActualStartDate))
 
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return errors.Wrap(err, "failed to get stdout pipe")
-	}
+	j.wg.Add(1)
 
-	j.Wg.Add(1)
 	// start the logging goroutine - tee to stdout and the job's log file
 	go jobNodeLogger(&wg, &outBuf, stdout, "stdout")
+
+	//--------------------------------
 	// run the node while logging to the log file and stdout
 	err = cmd.Run()
 	if err != nil {
-		return errors.Wrap(err, "command failed")
+		return fmt.Errorf("command failed: %w", err)
 	}
+	//--------------------------------
+
 	// await  the node's stdout closing
-	wg.Wait()
+	j.wg.Wait()
 
 	// log the end times
 	end := time.Now().UnixMilli()
