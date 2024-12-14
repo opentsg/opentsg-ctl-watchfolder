@@ -12,6 +12,18 @@
             "program": "${workspaceFolder}"
         },
         {
+            "name": "otsg",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": [
+                "--debug",
+                "--folder",
+                " ~/gr/otsg-marimo/jobs"
+            ]
+        },
+        {
             "name": "TEST",
             "type": "go",
             "request": "launch",
@@ -19,6 +31,5 @@
             "cwd": "__TEST__",
             "program": "__TEST__/test.go"
         }
-
     ]
 }

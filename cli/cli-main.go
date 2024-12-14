@@ -11,7 +11,10 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"os/user"
+	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/job"
@@ -52,6 +55,30 @@ var mainCmd = &cobra.Command{
 			log.UsePrettyDebugLogger()
 		case (!LogLevelDebug) && (!ProductionLogging):
 			log.UsePrettyInfoLogger()
+		}
+
+		// tidy up the folder expression and check it exists
+		jobsFolder = strings.Trim(jobsFolder, " \n\t\r")
+		if strings.HasPrefix(jobsFolder, "~/") {
+			usr, err := user.Current()
+			if err != nil {
+				slog.Error(fmt.Sprintf("cannot resolve user (%s) parsing --folder (%s)", usr.Name, jobsFolder))
+				os.Exit(1)
+			}
+			jobsFolder, err = filepath.Abs(filepath.Join(usr.HomeDir, jobsFolder[2:]))
+			if err != nil {
+				slog.Error(fmt.Sprintf("cannot find folder with user(%s) while parsing --folder (%s)", usr.Name, jobsFolder))
+				os.Exit(1)
+			}
+			fInfo, err := os.Stat(jobsFolder)
+			if err != nil {
+				slog.Error(fmt.Sprintf("cannot locate --folder (%s)", jobsFolder), "err", err)
+				os.Exit(1)
+			}
+			if !fInfo.IsDir() {
+				slog.Error(fmt.Sprintf("--folder (%s) is not a folder", jobsFolder))
+				os.Exit(1)
+			}
 		}
 
 		startMsg := fmt.Sprintf("Minikube Watchfolder Controller (%s)", jobsFolder)

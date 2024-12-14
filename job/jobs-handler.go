@@ -9,8 +9,10 @@ package job
 // logic file that defines rules
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
+	"os"
 	"path/filepath"
 	"strconv"
 )
@@ -28,13 +30,18 @@ func (jobs *JobManagement) ParseJobs() {
 		slog.Debug(fmt.Sprintf(" found %d folders with glob(%s)", len(jobsRaw), globFolders))
 	}
 
+	// reset the seen status of each job
+	for i, _ := range jobs.Known {
+		jobs.Known[i].state = StateUnknown
+	}
+
 	// look for lock file in each job folder found
 	for _, jFolder := range jobsRaw {
 		absFolder, _ := filepath.Abs(jFolder)
 		tmp := JobInfo{
 			folderPath:   URL(jFolder),
-			lockfilePath: URL(filepath.Join(jFolder, jobs.LockFileName)),
-			joblogPath:   URL(filepath.Join(jFolder, jobs.JobLogName)),
+			lockFilePath: URL(filepath.Join(jFolder, jobs.LockFileName)),
+			jobLogPath:   URL(filepath.Join(jFolder, jobs.JobLogName)),
 			Id:           URL(absFolder),
 		}
 		status, meta, err := tmp.ReadLockFileMetadata()
@@ -45,12 +52,23 @@ func (jobs *JobManagement) ParseJobs() {
 			tmp.meta = meta
 			jobs.UpdateKnownJobs(&tmp)
 			if DEBUG_PARSER {
-				slog.Debug(fmt.Sprintf("status job%04d (%-9s) meta(%-12s)  << %s", tmp.jobId, status, meta, tmp.lockfilePath))
+				slog.Debug(fmt.Sprintf("status job%04d (%-9s) meta(%-12s)  << %s", tmp.jobId, status, meta, tmp.lockFilePath))
 			}
 		} else {
-			slog.Debug(fmt.Sprintf("ERROR reading job%04d lockfile << %s", tmp.jobId, tmp.lockfilePath))
+			// if the lockfile does not exist ignore error
+			if !errors.Is(err, os.ErrNotExist) {
+				slog.Debug(fmt.Sprintf("ERROR reading job%04d lockfile << %s", tmp.jobId, tmp.lockFilePath))
+			}
 		}
 	}
+
+	// set missing job states to deleted
+	for i := range jobs.Known {
+		if jobs.Known[i].state != StateSeen {
+			jobs.Known[i].state = StateDeleted
+		}
+	}
+
 }
 
 // iterate over the managed jobs and add new ones
@@ -60,6 +78,7 @@ func (jobs *JobManagement) UpdateKnownJobs(newJob *JobInfo) {
 			//we've seen this job before - let's update from the lockfile
 			jobs.Known[i].Status = newJob.Status
 			jobs.Known[i].meta = newJob.meta
+			jobs.Known[i].state = StateSeen
 			return
 		}
 	}
@@ -73,20 +92,24 @@ func (jobs *JobManagement) UpdateKnownJobs(newJob *JobInfo) {
 // needed when calling the handlers.
 func (jobs *JobManagement) HandleJobs() {
 	for i, j := range jobs.Known {
-		_hdr := fmt.Sprintf("job%04d  +----------------------------------------", j.jobId)
-		_def := fmt.Sprintf("job%04d  ----- %-12s -----------------------", j.jobId, j.Status)
+		_fmt := "job%04d  ----- %-12s -----------------------"
+		_hdr := "============"
 		switch j.Status {
 		case NEW:
-			slog.Debug(_hdr)
+			slog.Debug(fmt.Sprintf(_fmt, j.jobId, _hdr))
 			jobs.Known[i].HandleNewJob()
 		case QUEUED:
-			slog.Debug(_hdr)
+			slog.Debug(fmt.Sprintf(_fmt, j.jobId, _hdr))
 			jobs.Known[i].QueueJob(jobs)
 		case RUNNING:
-			slog.Debug(_hdr)
+			slog.Debug(fmt.Sprintf(_fmt, j.jobId, _hdr))
 			jobs.Known[i].RunningJob(jobs)
 		default:
-			slog.Debug(_def)
+			if j.state == StateDeleted {
+				slog.Debug(fmt.Sprintf(_fmt, j.jobId, "Deleted"))
+			} else {
+				slog.Debug(fmt.Sprintf(_fmt, j.jobId, j.Status))
+			}
 		}
 	}
 }

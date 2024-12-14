@@ -36,38 +36,10 @@ const (
 type StateEnum int
 
 const (
-	StateNew               StateEnum = iota
-	StateNewInitialised    StateEnum = iota
-	StateQueuedSubmitted   StateEnum = iota
-	StateQueuedWaiting     StateEnum = iota
-	StateRunningInit       StateEnum = iota
-	StateRunningOk         StateEnum = iota
-	StateRunningWaiting    StateEnum = iota
-	StateCompleted         StateEnum = iota
-	StateFailed            StateEnum = iota
-	StateFailedInvalid     StateEnum = iota
-	StateCancelledInit     StateEnum = iota
-	StateCancelledWaiting  StateEnum = iota
-	StateCancelledComplete StateEnum = iota
-	StateCancelledFailed   StateEnum = iota
+	StateUnknown StateEnum = iota
+	StateSeen    StateEnum = iota
+	StateDeleted StateEnum = iota
 )
-
-var StatusMap = map[StateEnum]JobStatusEnum{
-	StateNew:               NEW,
-	StateNewInitialised:    NEW,
-	StateQueuedSubmitted:   QUEUED,
-	StateQueuedWaiting:     QUEUED,
-	StateRunningInit:       RUNNING,
-	StateRunningOk:         RUNNING,
-	StateRunningWaiting:    RUNNING,
-	StateCompleted:         COMPLETED,
-	StateFailed:            FAILED,
-	StateFailedInvalid:     FAILED,
-	StateCancelledInit:     CANCELLED,
-	StateCancelledWaiting:  CANCELLED,
-	StateCancelledComplete: CANCELLED,
-	StateCancelledFailed:   FAILED,
-}
 
 type LogLevelCode int
 type LogLevelName string
@@ -111,8 +83,8 @@ type JobInfo struct {
 	//internal properties
 	jobId        int
 	folderPath   URL
-	lockfilePath URL
-	joblogPath   URL
+	lockFilePath URL
+	jobLogPath   URL
 	meta         string
 	state        StateEnum
 	firstSeenAt  string

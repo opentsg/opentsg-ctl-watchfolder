@@ -18,7 +18,7 @@ func (j *JobInfo) HandleNewJob() {
 	_dbg := fmt.Sprintf("         |%04d new", j.jobId)
 	slog.Debug(fmt.Sprintf("%s (%s)", _dbg, j.meta))
 	switch j.meta {
-	case "test":
+	case "test", "alive_response":
 		msg := fmt.Sprintf("job%04d NEW active controller check", j.jobId)
 		// check that the executable runs - return the version
 		version, errMsg := j.getVersion()

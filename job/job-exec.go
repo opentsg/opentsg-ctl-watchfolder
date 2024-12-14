@@ -34,7 +34,9 @@ func (j *JobInfo) getVersion() (version string, errMsg string) {
 func (j *JobInfo) runJob(jobs *JobManagement) {
 	var outBuf bytes.Buffer
 	var errBuf bytes.Buffer
-	jlog := log.JobLogger(string(j.joblogPath))
+	// make a logger for the user's job and close the file handle when done
+	jLog, jobFile := log.JobLogger(string(j.jobLogPath))
+	defer jobFile.Close()
 	//run the app & capture stdout
 	cmd := exec.Command(tsgApp, optVersion)
 	cmd.Stdout = &outBuf
@@ -42,13 +44,13 @@ func (j *JobInfo) runJob(jobs *JobManagement) {
 
 	start := time.Now().UnixMilli()
 	j.ActualStartDate = j.TimeStamp()
-	jlog.info(fmt.Sprintf("starting job at %s", j.ActualStartDate))
+	jLog.Info(fmt.Sprintf("starting job at %s", j.ActualStartDate))
 	cmd.Run()
 	end := time.Now().UnixMilli()
 	j.ActualEndDate = j.TimeStamp()
 	j.ActualDuration = int(end - start)
-	jlog.info(fmt.Sprintf("ending job at %s", j.ActualEndDate))
-	jlog.info(fmt.Sprintf("duration of %d ms", j.ActualDuration))
+	jLog.Info(fmt.Sprintf("ending job at %s", j.ActualEndDate))
+	jLog.Info(fmt.Sprintf("duration of %d ms", j.ActualDuration))
 
 	//clear the running job lock
 	jobs.JobRunning = nil

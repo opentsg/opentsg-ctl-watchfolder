@@ -35,9 +35,8 @@ func (j *JobInfo) ParseLockFileString(s string) (status string, meta string, err
 // GetJobMetadata retrieves the metadata from job folders
 func (j *JobInfo) ReadLockFileMetadata() (status string, meta string, err error) {
 
-	file, err := os.Open(string(j.lockfilePath))
+	file, err := os.Open(string(j.lockFilePath))
 	if err != nil {
-		slog.Debug(fmt.Sprintf("   err %s cannot be opened", j.lockfilePath))
 		return "", "", err
 	}
 	defer file.Close()
@@ -55,7 +54,7 @@ func (j *JobInfo) ReadLockFileMetadata() (status string, meta string, err error)
 func (j *JobInfo) SetJobStatus(status JobStatusEnum, meta string) {
 	//set and write to lock file
 	s := []byte(fmt.Sprintf("%s %s", status, meta))
-	err := os.WriteFile(string(j.lockfilePath), s, 0644)
+	err := os.WriteFile(string(j.lockFilePath), s, 0644)
 
 	if err != nil {
 		slog.Error(fmt.Sprintf("job%04d  status update failed - cannot write to %s", j.jobId, string(j.folderPath)))
