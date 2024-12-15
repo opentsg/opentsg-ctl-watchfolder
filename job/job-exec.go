@@ -8,12 +8,11 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log/slog"
 	"os/exec"
+	"path/filepath"
 	"strings"
-	"sync"
 	"time"
-
-	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/log"
 )
 
 var tsgApp = "msgtsg-node"
@@ -34,18 +33,19 @@ func (j *JobInfo) getVersion() (version string, errMsg string) {
 	return strings.Trim(outBuf.String(), c), strings.Trim(errBuf.String(), c)
 }
 
-func (j *JobInfo) jobNodeLogger(wg *sync.WaitGroup, buf io.Writer, rc io.ReadCloser) {
-	jLog, jobFile := log.JobLogger(string(j.jobLogPath))
-	defer jobFile.Close()
+func (j *JobInfo) jobNodeLogger(buf io.Writer, rc io.ReadCloser) {
+	// jLog, jobFile := log.JobLogger(string(j.jobLogPath))
+	// defer jobFile.Close()
+
 	scanner := bufio.NewScanner(rc)
 	for scanner.Scan() {
 		line := scanner.Text()
-		jLog.Info(line)
+		slog.Info(line)
 	}
 	if err := scanner.Err(); err != nil {
-		jLog.Error("cannot redirect output to file", "err", err)
+		slog.Error("cannot redirect output to file", "err", err)
 	}
-	wg.Done()
+	j.wg.Done()
 }
 
 func (j *JobInfo) runJob(jobs *JobManagement) error {
@@ -53,11 +53,19 @@ func (j *JobInfo) runJob(jobs *JobManagement) error {
 	// var errBuf bytes.Buffer
 
 	// make a logger for the user's job and close the file handle when done
-	jLog, jobFile := log.JobLogger(string(j.jobLogPath))
-	defer jobFile.Close()
+	// jLog, jobFile := log.JobLogger(string(j.jobLogPath))
+	// defer jobFile.Close()
 
 	//setup the command to run
-	cmd := exec.Command(tsgApp, optVersion)
+	mainJson := filepath.Join(string(j.folderPath), "main.json")
+	// optRun := fmt.Sprintf("-c %s -output %s -log stdout -debug", mainJson, string(j.folderPath))
+	argRun := []string{
+		"-c", mainJson,
+		"-output", string(j.folderPath),
+		"-log", "stdout",
+		"-debug",
+	}
+	cmd := exec.Command(tsgApp, argRun...)
 
 	// pipe stdout
 	stdout, err := cmd.StdoutPipe()
@@ -67,12 +75,12 @@ func (j *JobInfo) runJob(jobs *JobManagement) error {
 
 	start := time.Now().UnixMilli()
 	j.ActualStartDate = j.TimeStamp()
-	jLog.Info(fmt.Sprintf("starting job at %s", j.ActualStartDate))
+	slog.Info(fmt.Sprintf("starting job at %s", j.ActualStartDate))
 
 	j.wg.Add(1)
 
 	// start the logging goroutine - tee to stdout and the job's log file
-	go jobNodeLogger(&wg, &outBuf, stdout, "stdout")
+	go j.jobNodeLogger(&outBuf, stdout)
 
 	//--------------------------------
 	// run the node while logging to the log file and stdout
@@ -89,10 +97,11 @@ func (j *JobInfo) runJob(jobs *JobManagement) error {
 	end := time.Now().UnixMilli()
 	j.ActualEndDate = j.TimeStamp()
 	j.ActualDuration = int(end - start)
-	jLog.Info(fmt.Sprintf("ending job at %s", j.ActualEndDate))
-	jLog.Info(fmt.Sprintf("duration of %d ms", j.ActualDuration))
+	slog.Info(fmt.Sprintf("ending job at %s", j.ActualEndDate))
+	slog.Info(fmt.Sprintf("duration of %d ms", j.ActualDuration))
 
 	//clear the running job lock
 	jobs.JobRunning = nil
 	j.SetJobStatus(COMPLETED, "")
+	return nil
 }

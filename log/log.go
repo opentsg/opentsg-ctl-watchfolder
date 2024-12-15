@@ -33,7 +33,7 @@ func UsePrettyInfoLogger() {
 // JobLogger is a no-color version of the PrettyInfoLogger that is created
 // to append to the job log folder
 func JobLogger(path string) (*slog.Logger, *os.File) {
-	fileHandle, _ := os.OpenFile(path, os.O_APPEND, 0666)
+	fileHandle, _ := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	writer := bufio.NewWriter(fileHandle)
 
 	newLogger := slog.New(

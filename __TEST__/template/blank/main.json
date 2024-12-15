@@ -1,0 +1,13 @@
+{
+  "include": [
+    {
+      "uri": "canvas.json",
+      "name": "canvas"
+    }
+  ],
+  "create": [
+    {
+      "canvas": {}
+    }
+  ]
+}

@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 
+	dCopy "github.com/otiai10/copy"
 	"github.com/phsym/console-slog"
 	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/job"
 	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/log"
@@ -30,27 +31,31 @@ type initState struct {
 	id     int
 	status string
 	uri    string
+	tpl    *string
 }
 
-var folders = []initState{
-	initState{id: 123, status: "NEW"},
-	initState{id: 124, status: "QUEUED"},
-	initState{id: 125, status: "NEW test"},
-	initState{id: 126, status: "FAILED"},
-	initState{id: 127, status: "RUNNING"},
-	initState{id: 155, status: "QUEUED"},
-	initState{id: 157, status: "CANCELLED"},
-	initState{id: 1538, status: "COMPLETED"},
+var (
+	tBlank = "blank"
+)
+var jobFolder = []initState{
+	initState{id: 123, status: "NEW", tpl: nil},
+	initState{id: 124, status: "QUEUED", tpl: &tBlank},
+	initState{id: 125, status: "NEW test", tpl: &tBlank},
+	initState{id: 126, status: "FAILED", tpl: nil},
+	initState{id: 127, status: "RUNNING", tpl: nil},
+	initState{id: 155, status: "QUEUED", tpl: &tBlank},
+	initState{id: 157, status: "CANCELLED", tpl: nil},
+	initState{id: 1538, status: "COMPLETED", tpl: nil},
 }
 
 var root = "./jobs"
 
-func splatJobStatus(j job.JobInfo, status string) {
-	path := filepath.Join(string(j.Id), "_status.lock")
+func splatJobStatus(lockfile string, status string) {
+	path := filepath.Join(string(lockfile), "_status.lock")
 	s := []byte(status)
 
 	if err := os.WriteFile(path, s, 0644); err != nil {
-		slog.Error(fmt.Sprintf("cannot write to %s", j.Id))
+		slog.Error(fmt.Sprintf("cannot write to %s: %s", lockfile, err))
 		return
 	}
 }
@@ -59,29 +64,41 @@ func main() {
 	log.UsePrettyDebugLogger()
 	slog.Info("__TEST__ reset job stats")
 
-	//make all the folders
-	for i, j := range folders {
-		folderName := fmt.Sprintf("job%04d", j.id)
-		folderPath, _ := filepath.Abs(filepath.Join(root, folderName))
-		folders[i].uri = folderPath
-		os.MkdirAll(folderPath, os.ModePerm)
-	}
-
-	//display status of lock files
 	jobs := &job.JobManagement{
 		Folder:       root,
 		LockFileName: "_status.lock",
 	}
+
+	//make all the folders & status files
+	for i, f := range jobFolder {
+		folderName := fmt.Sprintf("job%04d", f.id)
+		folderPath, _ := filepath.Abs(filepath.Join(root, folderName))
+		jobFolder[i].uri = folderPath
+		os.MkdirAll(folderPath, os.ModePerm)
+		splatJobStatus(folderPath, f.status)
+		if f.tpl != nil {
+			tplPath, err := filepath.Abs(filepath.Join("template", *f.tpl))
+			if err != nil {
+				slog.Error(fmt.Sprintf("cannot ABS template: %s", err))
+				os.Exit(1)
+			}
+			dst := folderPath
+			err = dCopy.Copy(tplPath, dst)
+			if err != nil {
+				slog.Error(fmt.Sprintf("cannot copy template: %s", err))
+			}
+		}
+	}
+
+	//display status of lock files
 	jobs.ParseJobs()
 	slog.Info("--- resetting status lock files ---------------------------------------------")
 
-	//write all the status.lock files
+	//display all the status.lock files (and any extras)
 	for _, j := range jobs.Known {
 		extra := true
-		for _, f := range folders {
-			//update the status if the files have the same abs path
+		for _, f := range jobFolder {
 			if f.uri == string(j.Id) {
-				splatJobStatus(j, f.status)
 				slog.Debug(fmt.Sprintf("job %s stats=%s", j.Id, f.status))
 				extra = false
 			}
