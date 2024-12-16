@@ -1,0 +1,17 @@
+#defaultBaseImage: index.docker.io/v1/mrmxf/opentsg-ctl-watchfolder
+defaultBaseImage: ko.local/opentsg-ctl-watchfolder
+defaultPlatforms:
+- linux/arm64
+- linux/amd64
+builds:
+- id: production
+  dir: .  # default is .
+  main: ./main.go
+  # env:
+  # - GOPRIVATE=git.internal.example.com,source.developers.google.com
+  # flags:
+  # - -tags
+  # - netgo
+  ldflags:
+  - "-X gitlab.com/mrmxf/clog/cloglib/semver.SemVerInfo='{{Git.FullCommit}}|2024-12-16||opentsg-ctl-watchfolder|OpenTSG Job Controller'"
+

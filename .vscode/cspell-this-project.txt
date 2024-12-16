@@ -134,6 +134,7 @@ ttycrayon
 unstaged
 ux
 vals
+vcode
 visualise
 watchfolder
 Worktree
