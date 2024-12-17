@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-var tsgApp = "msgtsg-node"
+var tsgApp = "opentsg-node"
 var optVersion = "--version"
 
 func (j *JobInfo) getVersion() (version string, errMsg string) {

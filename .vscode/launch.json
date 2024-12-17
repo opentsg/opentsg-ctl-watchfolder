@@ -25,7 +25,7 @@
             "args": [
                 "--debug",
                 "--folder",
-                " ~/gr/otsg-marimo/jobs"
+                "~/gr/otsg-marimo/jobs"
             ]
         },
         {
