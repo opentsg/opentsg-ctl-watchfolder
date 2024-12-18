@@ -11,8 +11,6 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
-	"log/slog"
-	"runtime"
 
 	"gopkg.in/yaml.v2"
 )
@@ -31,10 +29,4 @@ func getEmbeddedHistoryData(fs embed.FS, filePath string) error {
 		return errors.New(e)
 	}
 	return nil
-}
-
-func init() {
-	// trace init order for sanity
-	_, file, _, _ := runtime.Caller(0)
-	slog.Debug("init " + file)
 }

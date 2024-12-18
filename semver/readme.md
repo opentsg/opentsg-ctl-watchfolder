@@ -29,7 +29,7 @@ letter **v** when needed in your workflow.
 * `semver/semver.go` mixes the yaml and the linker data to display a version
 * Linker data is provided with the go build command:
   ```sh
-  go build -ldflags "-X gitlab.com/mrmxf/clog/cloglib/semver.SemVerInfo=\"'x_x_x_x_HASH_x_x_x_x_x_VALUE_x_x_x_x_AS_x_x_x_x_x_TEXT_x_x_x_x_x_x|2024-07-09||myclog|Command_Line_Of_Go'" .
+  go build -ldflags "-X gitlab.com/workspace/account/semver.SemVerInfo=\"'x_x_x_x_HASH_x_x_x_x_x_VALUE_x_x_x_x_AS_x_x_x_x_x_TEXT_x_x_x_x_x_x|2024-07-09||myclog|Command_Line_Of_Go'" .
   ```
   The format of the linker string is `commithash|date|suffix|appname|apptitle`:
   * `commithash` - the 40 digit hash from the repo used to build clog
@@ -44,22 +44,11 @@ letter **v** when needed in your workflow.
 
 Create an embedded yaml (or json) file to track the releases.
 
-```golang
-// Typically this is in the root folder making it easy to find
-//go:embed releases.yaml
-var ClogFs embed.FS
-```
-
 ```yaml
 # Dates must be in YYYY-MM-DD international ISO 8601 format
-- version:   "0.4.3"
-  date:      2024-06-25
-  codename:  drainage
-  note:      public release candidate
-- version:   "0.4.2"
-  date:      2024-02-06
-  codename:  drainage
-  note:      Probably the commit message
+- {version: "0.2.0", date: 2024-12-02, codename: alpha, note: first rc docker}
+- {version: "0.1.0", date: 2024-12-01, codename: alpha, note: first prototype}
+
 ```
 
 The package assumes that the first entry is the one that is to be used and that
@@ -68,35 +57,40 @@ because you're going backwards to a previous branch.
 
 You can add extra fields, however, the ones shown are required.
 
-
 ## linking
 
 A release build script can inject LDLinkerData{} variables:
 
 ```shell
-  GOOS=$OS GOARCH=$CPU go build -ldflags \
- "-X main.Los='mac' -X main.Lcpu='arm64'  -X main.Lhash=$(git rev-list -1 HEAD) -X main.Ldate=$DT -X main.Lappname=$APP -X Lsuffix="rc" \
- -o tmp/executable
+  commitHash="$(git rev-list -1 HEAD)"
+  printf -v buildDate '%(%Y-%m-%d)T' -1
+  buildSuffix="" && [ -z "$(git branch  --show-current|grep main)" ] && buildSuffix="$(git branch  --show-current)"
+  buildAppName=myapp
+  buildAppTitle="My Awesome App With SemVer"
+   # create linker data info:
+  ldi="$commitHash|$buildDate|$buildSuffix|$buildAppName|$buildAppTitle"
+  # use path to variable in the built project
+  # use `go tool objdump -S myExecutable | grep /semver.SemVerInfo` to find the path
+  linkerDataSemverPath=github.com/workspace/repo/semver.SemVerInfo
+  # build with linker data
+  GOOS=$OS GOARCH=$CPU go build -ldflags "-X $linkerDataSemverPath='$ldi'" -o /some/executable
 ````
 
 to use in your code:
 
-```
+```golang
+// Typically this is in the root folder making it easy to find
+//go:embed releases.yaml
+var embeddedFs embed.FS
+
+```golang
     package main
-    dummy data to be overridden by linker injection for production
-    var Los = "default"
-    var Lcpu = "default"
-    var Lcommit = "default"
-    var Ldate = "default"
-    var Lsuffix = "default"
-    var Lappname = "default"
-    //...
-    semver.Initialise(semver.LinkerData{
-        BuildOs: Los,
-        BuildCpu: Lcpu,
-    })
-    //...
-    fmt.Printf("current version=%s", semver.Info.Short)
+
+    // pass an FS and a filePath for the semver to read history
+    semver.Initialise(embeddedFs, "releases.yaml")
+
+    fmt.Printf("short version=%s", semver.Info.Short)
+    fmt.Printf(" long version=%s", semver.Info.Long)
 ```
 
 [sv]: https://semver.org/

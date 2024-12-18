@@ -8,8 +8,6 @@ package semver
 import (
 	"embed"
 	"fmt"
-	"log/slog"
-	"runtime"
 )
 
 // logic to valid the loading of the Info struct & linker data
@@ -35,10 +33,4 @@ func Initialise(fs embed.FS, filePath string) error {
 		Info.ARCH,
 		"\""+Info.Note+"\"")
 	return nil
-}
-
-func init() {
-	// trace init order for sanity
-	_, file, _, _ := runtime.Caller(0)
-	slog.Debug("init " + file)
 }

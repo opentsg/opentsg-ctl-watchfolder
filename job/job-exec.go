@@ -16,7 +16,7 @@ import (
 )
 
 var tsgApp = "opentsg-node"
-var optVersion = "--version"
+var optVersion = "-version"
 
 func (j *JobInfo) getVersion() (version string, errMsg string) {
 	var outBuf bytes.Buffer

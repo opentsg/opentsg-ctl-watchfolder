@@ -6,6 +6,7 @@ toolchain go1.23.3
 
 require (
 	github.com/fatih/color v1.18.0 // indirect
+	github.com/go-chi/chi/v5 v5.2.0 // indirect
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/longkai/rfc7807 v1.0.0 // indirect

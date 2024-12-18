@@ -47,6 +47,7 @@ githubcli
 gitlab
 glab
 GLAT
+GOARCH
 godoc
 godocmac
 gofmt

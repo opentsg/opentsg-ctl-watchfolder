@@ -17,17 +17,18 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/dash"
 	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/job"
 	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/log"
 	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/semver"
 )
 
-//go:embed releases.yaml
 var eFs embed.FS
 
 var jobsFolder = "."
 var LogLevelDebug = false
 var ProductionLogging = false
+var ShowDashboard = true
 
 // mainCmd starts the controller after flags have been parsed.
 var mainCmd = &cobra.Command{
@@ -91,6 +92,13 @@ var mainCmd = &cobra.Command{
 			JobLogName:   "_ctl-watchfolder.log",
 		}
 
+		// if we have to show the Dashboard then start the server
+		if ShowDashboard {
+			slog.Debug("root command: show dashboard")
+			dash.ShowDashboard(3001, eFs, jobs)
+			return
+		}
+
 		//init the jobs to fast start the polling
 		jobs.ParseJobs()
 		jobs.HandleJobs()
@@ -103,7 +111,13 @@ var mainCmd = &cobra.Command{
 	},
 }
 
-func Execute() {
+func Execute(embedFs embed.FS) {
+	eFs = embedFs
+	//initialise the version history
+	err := semver.Initialise(eFs, "releases.yaml")
+	if err != nil {
+		slog.Debug("init semver failed", "err", err)
+	}
 	if err := mainCmd.Execute(); err != nil {
 		slog.Error("Failed to initialise command line interface", "err", err)
 		os.Exit(1)
@@ -114,12 +128,6 @@ func init() {
 	// trace init order for sanity
 	_, file, _, _ := runtime.Caller(0)
 	slog.Debug("init " + file)
-
-	//initilise the version history
-	err := semver.Initialise(eFs, "releases.yaml")
-	if err != nil {
-		slog.Debug("init semver failed", "err", err)
-	}
 
 	// jobsFolder flags
 	mainCmd.PersistentFlags().StringVarP(&jobsFolder, "folder", "f", ".", "watch a folder for new jobs e.g. --folder \"./network-jobs/\"")
@@ -132,6 +140,9 @@ func init() {
 	// logging flags
 	mainCmd.PersistentFlags().BoolVarP(&LogLevelDebug, "debug", "D", false, "set logging level to debug (or info production mode)")
 	mainCmd.PersistentFlags().BoolVarP(&LogLevelDebug, "production", "P", false, "production mode - JSON logging at error / info level")
+
+	//dashboard flag
+	mainCmd.PersistentFlags().BoolVarP(&ShowDashboard, "dashboard", "d", true, "show dashboard on port 3001")
 
 	// config file flags
 	// mainCmd.PersistentFlags().StringVarP(&clCmd.ConfigFilePath, "config", "c", "", "clog -c myClogfig.yaml   # clog Core Cat clogrc/core/clog.clConfig.yaml > myClogfig.yaml")

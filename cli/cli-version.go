@@ -30,7 +30,7 @@ var versionCmd = &cobra.Command{
 			fmt.Println(semver.Info.Note)
 
 		} else {
-			fmt.Printf("%s (%s) %s\n", App, semver.Info.Long)
+			fmt.Printf("%s %s\n", App, semver.Info.Long)
 		}
 	},
 }

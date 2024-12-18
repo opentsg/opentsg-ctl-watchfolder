@@ -6,13 +6,17 @@ package main
 // package main is an executable for opentsg job control in minikube
 
 import (
+	"embed"
+
 	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/cli"
 )
 
-// release history is in the cli package
+//go:embed releases.yaml www dash/templates
+var embedFs embed.FS
+
 // main sets the logger and runs the command line interface (cli)
 func main() {
 
 	// run the cli processor
-	cli.Execute()
+	cli.Execute(embedFs)
 }

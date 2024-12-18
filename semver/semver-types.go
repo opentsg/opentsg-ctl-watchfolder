@@ -4,34 +4,6 @@ import (
 	"time"
 )
 
-// A release build script can inject LDLinkerData{} variables:
-//
-// ```shell
-//   GOOS=$OS GOARCH=$CPU go build -ldflags \
-//  "-X main.Los='mac' -X main.Lcpu='arm64'  -X main.Lhash=$(git rev-list -1 HEAD) -X main.Ldate=$DT -X main.Lappname=$APP -X Lsuffix="rc" \
-//  -o tmp/executable
-// ````
-
-//to use in your code:
-// ```
-//     package main
-//
-//     dummy data to be overridden by linker injection for production
-//     var Los = "default"
-//     var Lcpu = "default"
-//     var Lcommit = "default"
-//     var Ldate = "default"
-//     var Lsuffix = "default"
-//     var Lappname = "default"
-//     //...
-//     semver.Initialise(semver.LinkerData{
-//         BuildOs: Los,
-//         BuildCpu: Lcpu,
-//     })
-//     //...
-//     fmt.Printf("current version=%s", semver.Info.Short)
-// ```
-
 type LDgolangLinkerData struct {
 	BuildHash           string // usually `$(git rev-list -1 HEAD)`
 	BuildDate           string // usually `$(date +%F)`

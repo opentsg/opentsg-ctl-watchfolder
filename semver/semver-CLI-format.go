@@ -7,11 +7,7 @@ package semver
 
 import (
 	_ "embed"
-	"log/slog"
-	"runtime"
 	"unicode"
-
-	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/crayon"
 )
 
 // iterate through a string and highlight it for display on a TTY.
@@ -19,10 +15,10 @@ import (
 // capital letters at the start of words use the capitals `c` highlighter,
 // everything else uses the body `b` highlighter.
 func highlightTitleCase(str string) string {
-	var crayon = crayon.Color()
+	var pen = Color()
 
-	c := crayon.Success
-	b := crayon.Info
+	c := pen.Success
+	b := pen.Info
 	res := ""
 	skipped := ""
 
@@ -41,10 +37,4 @@ func highlightTitleCase(str string) string {
 		res += b(skipped)
 	}
 	return res
-}
-
-func init() {
-	// trace init order for sanity
-	_, file, _, _ := runtime.Caller(0)
-	slog.Debug("init " + file)
 }

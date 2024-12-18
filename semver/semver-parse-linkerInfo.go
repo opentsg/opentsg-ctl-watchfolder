@@ -119,9 +119,3 @@ func cleanLinkerData() error {
 	// log.Debug("semver.Info is ", "struct", Info)
 	return nil
 }
-
-func init() {
-	// trace init order for sanity
-	_, file, _, _ := runtime.Caller(0)
-	slog.Debug("init " + file)
-}
