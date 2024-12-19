@@ -8,17 +8,22 @@
   <meta name="keywords" content="css, library, picnic, picnicss, light">
   <meta name="description" content="A simple opentsg dashboard">
   <link rel="stylesheet" href="/picnic.min.css">
+  <link rel="stylesheet" href="/site.css">
   <link rel="icon" href="/img/favicon-32x32.png" type="image/png">
 </head>
 
-<body>
+<body class="dash">
 
   <main>
-    <section class="flex six">
-      <div class="full fifth"></div>
-      <div class="full four-fifth">
-        <h1>opentsg-ctl-watchfolder</h1>
-        Go to <a href="dash/"><code>dash/</code></a> to see the dashboard
+    <section class="flex six-600" style="border:1 red;">
+      <div class="full four-sixth-600">
+        <article class="card">
+          <header>
+            <h1>opentsg-ctl-watchfolder</h1>
+          </header>
+          <p>This page is only visible during development. No route to it exists in minikube.</p>
+          <p>Go to <a href="dash/"><code>dash/</code></a> to see the dashboard</p>
+        </article>
       </div>
     </section>
 

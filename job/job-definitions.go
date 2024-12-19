@@ -9,6 +9,7 @@ package job
 // logic file that defines rules
 
 import (
+	"html/template"
 	"sync"
 	"time"
 
@@ -39,6 +40,8 @@ const (
 	StateUnknown StateEnum = iota
 	StateSeen    StateEnum = iota
 	StateDeleted StateEnum = iota
+	StateRunning StateEnum = iota
+	StateDone    StateEnum = iota
 )
 
 type LogLevelCode int
@@ -81,15 +84,15 @@ type ErrorInfo *rfc7807.ProblemDetail
 
 type JobInfo struct {
 	//internal properties
-	jobId        int
-	folderPath   URL
-	lockFilePath URL
-	jobLogPath   URL
-	meta         string
-	state        StateEnum
-	firstSeenAt  string
-	queuedAt     string
-	wg           sync.WaitGroup
+	XjobId        int
+	XfolderPath   URL
+	XlockFilePath URL
+	XjobLogPath   URL
+	Xmeta         string
+	Xstate        StateEnum
+	XfirstSeenAt  string
+	XqueuedAt     string
+	Xcli          string
 
 	//the following parameters are external and follow SMPTE ST2126:2020
 	Id              URL           // URL pointing to the job instance in the job processor
@@ -109,12 +112,14 @@ type JobInfo struct {
 }
 
 type JobManagement struct {
+	View         template.HTML
 	JobRunning   *JobInfo
 	Known        []JobInfo
 	Queue        []*JobInfo
 	Folder       string
 	LockFileName string
 	JobLogName   string
+	Xcli         string
 
 	Wg sync.WaitGroup
 }

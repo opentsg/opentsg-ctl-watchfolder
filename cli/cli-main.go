@@ -96,7 +96,6 @@ var mainCmd = &cobra.Command{
 		if ShowDashboard {
 			slog.Debug("root command: show dashboard")
 			dash.ShowDashboard(3001, eFs, jobs)
-			return
 		}
 
 		//init the jobs to fast start the polling

@@ -6,17 +6,30 @@ import (
 	"log/slog"
 )
 
-type DashTemplateSrc struct {
-	main string
-}
-type DashTemplate struct {
-	main *template.Template
+type DashTemplateSrcFileMap map[string]string
+type DashTemplateMap map[string]*template.Template
+
+type TplMain struct {
+	Title string
+	Main  template.HTML
 }
 
-var tplSrc = DashTemplateSrc{
-	main: "dash/templates/main.html",
+type TplJobs struct {
+	Folder          string
+	JobCount        int
+	QueueDepth      int
+	JobRunningIdent string
+	JobCli          string
+
+	JobTableHTML template.HTML
 }
-var tpl = DashTemplate{}
+
+var tplSrcFile = DashTemplateSrcFileMap{
+	"main": "dash/templates/main.html",
+	"job":  "dash/templates/job-basic.html",
+	"jobs": "dash/templates/jobs-table.html",
+}
+var tpl = DashTemplateMap{}
 
 func initTemplateFrom(fs embed.FS, filePath string, name string) *template.Template {
 	var b []byte
@@ -32,6 +45,9 @@ func initTemplateFrom(fs embed.FS, filePath string, name string) *template.Templ
 	return t
 }
 
+// iterate over the embedded source files and init the templates
 func initTemplates(fs embed.FS) {
-	tpl.main = initTemplateFrom(fs, tplSrc.main, "main")
+	for i, srcFile := range tplSrcFile {
+		tpl[i] = initTemplateFrom(fs, srcFile, i)
+	}
 }

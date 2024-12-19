@@ -17,7 +17,19 @@
             ]
         },
         {
-            "name": "otsg",
+            "name": "otsg blink",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": [
+                "--debug",
+                "--folder",
+                "/home/bruce/gr/otsg-marimo/src/jobs"
+            ]
+        },
+        {
+            "name": "otsg lt",
             "type": "go",
             "request": "launch",
             "mode": "auto",

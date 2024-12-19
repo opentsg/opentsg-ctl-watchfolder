@@ -8,9 +8,17 @@
   <meta name="keywords" content="css, library, picnic, picnicss, light">
   <meta name="description" content="A simple opentsg dashboard">
   <link rel="stylesheet" href="/picnic.min.css">
+  <link rel="stylesheet" href="/site.css">
   <link rel="icon" href="/img/favicon-32x32.png" type="image/png">
 </head>
 
-<body>{{.Body}}</body>
+<body class="dash">
+  <script>
+    window.setTimeout(function () { window.location.reload(); }, 2000);
+  </script>
+  <main>
+    {{.Main}}
+  </main>
+</body>
 
 </html>

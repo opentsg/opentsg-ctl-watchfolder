@@ -33,7 +33,8 @@ func (j *JobInfo) getVersion() (version string, errMsg string) {
 	return strings.Trim(outBuf.String(), c), strings.Trim(errBuf.String(), c)
 }
 
-func (j *JobInfo) jobNodeLogger(buf io.Writer, rc io.ReadCloser) {
+func (j *JobInfo) jobNodeLogger(buf io.Writer, rc io.ReadCloser,
+	jobs *JobManagement, start int64) {
 	// jLog, jobFile := log.JobLogger(string(j.jobLogPath))
 	// defer jobFile.Close()
 
@@ -45,10 +46,22 @@ func (j *JobInfo) jobNodeLogger(buf io.Writer, rc io.ReadCloser) {
 	if err := scanner.Err(); err != nil {
 		slog.Error("cannot redirect output to file", "err", err)
 	}
-	j.wg.Done()
+	//clear the job running interlock
+	jobs.JobRunning = nil
+
+	// log the end times
+	end := time.Now().UnixMilli()
+	j.ActualEndDate = j.TimeStamp()
+	j.ActualDuration = int(end - start)
+	slog.Info(fmt.Sprintf("ending job at %s", j.ActualEndDate))
+	slog.Info(fmt.Sprintf("duration of %d ms", j.ActualDuration))
+
+	j.SetJobStatus(COMPLETED, "")
+
 }
 
 func (j *JobInfo) runJob(jobs *JobManagement) error {
+	_dbg := fmt.Sprintf("         |%04d end-check", j.XjobId)
 	var outBuf bytes.Buffer
 	// var errBuf bytes.Buffer
 
@@ -57,15 +70,19 @@ func (j *JobInfo) runJob(jobs *JobManagement) error {
 	// defer jobFile.Close()
 
 	//setup the command to run
-	mainJson := filepath.Join(string(j.folderPath), "main.json")
+	mainJson := filepath.Join(string(j.XfolderPath), "main.json")
 	// optRun := fmt.Sprintf("-c %s -output %s -log stdout -debug", mainJson, string(j.folderPath))
 	argRun := []string{
 		"-c", mainJson,
-		"-output", string(j.folderPath),
+		"-jobid", fmt.Sprintf("job%04d", j.XjobId),
+		"-output", string(j.XfolderPath),
 		"-log", "stdout",
 		"-debug",
 	}
 	cmd := exec.Command(tsgApp, argRun...)
+
+	j.Xcli = tsgApp + " " + strings.Join(argRun, " ")
+	jobs.Xcli = j.Xcli
 
 	// pipe stdout
 	stdout, err := cmd.StdoutPipe()
@@ -75,33 +92,18 @@ func (j *JobInfo) runJob(jobs *JobManagement) error {
 
 	start := time.Now().UnixMilli()
 	j.ActualStartDate = j.TimeStamp()
-	slog.Info(fmt.Sprintf("starting job at %s", j.ActualStartDate))
-
-	j.wg.Add(1)
+	slog.Info(fmt.Sprintf("% start @ %s", _dbg, j.ActualStartDate))
 
 	// start the logging goroutine - tee to stdout and the job's log file
-	go j.jobNodeLogger(&outBuf, stdout)
+	go j.jobNodeLogger(&outBuf, stdout, jobs, start)
 
 	//--------------------------------
 	// run the node while logging to the log file and stdout
-	err = cmd.Run()
+	err = cmd.Start()
 	if err != nil {
 		return fmt.Errorf("command failed: %w", err)
 	}
 	//--------------------------------
 
-	// await  the node's stdout closing
-	j.wg.Wait()
-
-	// log the end times
-	end := time.Now().UnixMilli()
-	j.ActualEndDate = j.TimeStamp()
-	j.ActualDuration = int(end - start)
-	slog.Info(fmt.Sprintf("ending job at %s", j.ActualEndDate))
-	slog.Info(fmt.Sprintf("duration of %d ms", j.ActualDuration))
-
-	//clear the running job lock
-	jobs.JobRunning = nil
-	j.SetJobStatus(COMPLETED, "")
 	return nil
 }

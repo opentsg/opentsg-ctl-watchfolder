@@ -1,0 +1,39 @@
+<table class="primary">
+  <thead>
+    <tr>
+      <th style="text-align: center;" colspan="7">
+        opentsg-ctl-watchfolder Jobs
+      </th>
+    </tr>
+    <tr>
+      <th style="text-align: center;" colspan="7">
+        Path: <span class="th-val">{{.Folder}}</span>
+        jobs: <span class="th-val">{{.JobCount}}</span>
+        queue: <span class="th-em">{{.QueueDepth}}</span>
+      </th>
+    </tr>
+    <tr>
+      <th>jobId</th>
+      <th>Status</th>
+      <th>Queued@</th>
+      <th>Start@</th>
+      <th>End@</th>
+      <th>Duration</th>
+      <th>meta</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="7">
+        {{if .JobRunningIdent}}
+        <h3 class="label success">{{.JobRunningIdent}}</span></h4>
+          <p class="mono">{{.JobCli}}</p>
+        {{else}}
+        <h3 class="label">Node idle</h3>
+        <p>&nbsp;</p>
+        {{end}}
+      </td>
+    </tr>
+    {{.JobTableHTML}}
+  </tbody>
+</table>

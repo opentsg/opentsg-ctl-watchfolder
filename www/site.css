@@ -1,0 +1,28 @@
+/* Dash extra classes for picnic base */
+
+.mono {
+  font-family: 'Ubuntu Mono', monospace;
+  color:darkslategrey;
+}
+
+/* dash main is centered 1200px max*/
+.dash > main {
+  background: #fff;
+  text-align: left;
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 0 0;
+}
+
+/* highlight values for table headers */
+.th-val {
+  font-family: 'Ubuntu Mono', monospace;
+  font-weight:normal;
+  color:aqua;
+}
+.th-em {
+  font-family: 'Ubuntu Mono', monospace;
+  font-weight:normal;
+  color:lightcoral
+}

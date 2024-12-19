@@ -26,7 +26,7 @@ func (j *JobInfo) QueuePosition(jobs *JobManagement) (int, error) {
 }
 
 func (j *JobInfo) QueueJob(jobs *JobManagement) {
-	_dbg := fmt.Sprintf("         |%04d queue", j.jobId)
+	_dbg := fmt.Sprintf("         |%04d queue", j.XjobId)
 	pos, err := j.QueuePosition(jobs)
 
 	// if job not in queue - add it
@@ -38,7 +38,7 @@ func (j *JobInfo) QueueJob(jobs *JobManagement) {
 
 	meta := fmt.Sprintf("%d", pos)
 	j.SetJobStatus(QUEUED, meta)
-	j.queuedAt = j.TimeStamp()
+	j.XqueuedAt = j.TimeStamp()
 	slog.Debug(fmt.Sprintf("%s pos %s", _dbg, meta))
 
 	if pos == 1 && jobs.JobRunning == nil {
@@ -46,6 +46,7 @@ func (j *JobInfo) QueueJob(jobs *JobManagement) {
 		jobs.JobRunning = j
 		jobs.Queue = jobs.Queue[1:]
 		j.SetJobStatus(RUNNING, "")
+		j.Xstate = StateRunning
 		j.runJob(jobs)
 	}
 }

@@ -19,14 +19,14 @@ var dummyJob = "sleep 2 && echo 'dummy job done'"
 
 func (j *JobInfo) StartJob() {
 	j.SetJobStatus(RUNNING, "")
-	slog.Debug(fmt.Sprintf("job%04d  start", j.jobId))
+	slog.Debug(fmt.Sprintf("job%04d  start", j.XjobId))
 	res := shell.StreamShellSnippet(dummyJob, nil)
 	if res == nil {
 		j.SetJobStatus(FAILED, "")
-		slog.Debug(fmt.Sprintf("job%04d  failed", j.jobId))
+		slog.Debug(fmt.Sprintf("job%04d  failed", j.XjobId))
 	} else {
 
 		j.SetJobStatus(RUNNING, "")
-		slog.Debug(fmt.Sprintf("job%04d  running", j.jobId))
+		slog.Debug(fmt.Sprintf("job%04d  running", j.XjobId))
 	}
 }

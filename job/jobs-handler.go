@@ -32,40 +32,40 @@ func (jobs *JobManagement) ParseJobs() {
 
 	// reset the seen status of each job
 	for i, _ := range jobs.Known {
-		jobs.Known[i].state = StateUnknown
+		jobs.Known[i].Xstate = StateUnknown
 	}
 
 	// look for lock file in each job folder found
 	for _, jFolder := range jobsRaw {
 		absFolder, _ := filepath.Abs(jFolder)
 		tmp := JobInfo{
-			folderPath:   URL(jFolder),
-			lockFilePath: URL(filepath.Join(jFolder, jobs.LockFileName)),
-			jobLogPath:   URL(filepath.Join(jFolder, jobs.JobLogName)),
-			Id:           URL(absFolder),
+			XfolderPath:   URL(jFolder),
+			XlockFilePath: URL(filepath.Join(jFolder, jobs.LockFileName)),
+			XjobLogPath:   URL(filepath.Join(jFolder, jobs.JobLogName)),
+			Id:            URL(absFolder),
 		}
 		status, meta, err := tmp.ReadLockFileMetadata()
 		if err == nil {
 			intId, _ := strconv.Atoi(jFolder[len(jFolder)-4:])
-			tmp.jobId = intId
+			tmp.XjobId = intId
 			tmp.Status = JobStatusEnum(status)
-			tmp.meta = meta
+			tmp.Xmeta = meta
 			jobs.UpdateKnownJobs(&tmp)
 			if DEBUG_PARSER {
-				slog.Debug(fmt.Sprintf("status job%04d (%-9s) meta(%-12s)  << %s", tmp.jobId, status, meta, tmp.lockFilePath))
+				slog.Debug(fmt.Sprintf("status job%04d (%-9s) meta(%-12s)  << %s", tmp.XjobId, status, meta, tmp.XlockFilePath))
 			}
 		} else {
 			// if the lockfile does not exist ignore error
 			if !errors.Is(err, os.ErrNotExist) {
-				slog.Debug(fmt.Sprintf("ERROR reading job%04d lockfile << %s", tmp.jobId, tmp.lockFilePath))
+				slog.Debug(fmt.Sprintf("ERROR reading job%04d lockfile << %s", tmp.XjobId, tmp.XlockFilePath))
 			}
 		}
 	}
 
-	// set missing job states to deleted
+	// set all unknown job states to deleted
 	for i := range jobs.Known {
-		if jobs.Known[i].state != StateSeen {
-			jobs.Known[i].state = StateDeleted
+		if jobs.Known[i].Xstate == StateUnknown {
+			jobs.Known[i].Xstate = StateDeleted
 		}
 	}
 
@@ -77,13 +77,16 @@ func (jobs *JobManagement) UpdateKnownJobs(newJob *JobInfo) {
 		if j.Id == newJob.Id {
 			//we've seen this job before - let's update from the lockfile
 			jobs.Known[i].Status = newJob.Status
-			jobs.Known[i].meta = newJob.meta
-			jobs.Known[i].state = StateSeen
+			jobs.Known[i].Xmeta = newJob.Xmeta
+			//set the state to something benign if the job is unknown
+D			if jobs.Known[i].Xstate == StateUnknown {
+				jobs.Known[i].Xstate = StateSeen
+			}
 			return
 		}
 	}
 	//append the new job with the time we saw it
-	newJob.firstSeenAt = newJob.TimeStamp()
+	newJob.XfirstSeenAt = newJob.TimeStamp()
 	jobs.Known = append(jobs.Known, *newJob)
 }
 
@@ -96,19 +99,25 @@ func (jobs *JobManagement) HandleJobs() {
 		_hdr := "============"
 		switch j.Status {
 		case NEW:
-			slog.Debug(fmt.Sprintf(_fmt, j.jobId, _hdr))
+			slog.Debug(fmt.Sprintf(_fmt, j.XjobId, _hdr))
 			jobs.Known[i].HandleNewJob()
 		case QUEUED:
-			slog.Debug(fmt.Sprintf(_fmt, j.jobId, _hdr))
+			slog.Debug(fmt.Sprintf(_fmt, j.XjobId, _hdr))
 			jobs.Known[i].QueueJob(jobs)
 		case RUNNING:
-			slog.Debug(fmt.Sprintf(_fmt, j.jobId, _hdr))
+			slog.Debug(fmt.Sprintf(_fmt, j.XjobId, _hdr))
 			jobs.Known[i].RunningJob(jobs)
+		case COMPLETED:
+			slog.Debug(fmt.Sprintf(_fmt, j.XjobId, _hdr))
+			jobs.Known[i].JobEndCheck(jobs)
+		case FAILED:
+			slog.Debug(fmt.Sprintf(_fmt, j.XjobId, _hdr))
+			jobs.Known[i].JobEndCheck(jobs)
 		default:
-			if j.state == StateDeleted {
-				slog.Debug(fmt.Sprintf(_fmt, j.jobId, "Deleted"))
+			if j.Xstate == StateDeleted {
+				slog.Debug(fmt.Sprintf(_fmt, j.XjobId, "Deleted"))
 			} else {
-				slog.Debug(fmt.Sprintf(_fmt, j.jobId, j.Status))
+				slog.Debug(fmt.Sprintf(_fmt, j.XjobId, j.Status))
 			}
 		}
 	}

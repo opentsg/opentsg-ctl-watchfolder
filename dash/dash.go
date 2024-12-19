@@ -15,15 +15,25 @@ import (
 	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/job"
 )
 
-func ShowDashboard(port int, eFs embed.FS, jobs *job.JobManagement) {
+var jobs *job.JobManagement
+
+func ShowDashboard(port int, eFs embed.FS, jobsToView *job.JobManagement) {
+	jobs = jobsToView
 	initTemplates(eFs)
 	r := chi.NewRouter()
+
+	// use the default logger
 	r.Use(middleware.Logger)
-	// r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-	// 	w.Write([]byte("Go to <a href=\"dash/\">dash/</a>!"))
-	// })
-	r.Get("/dash", JobsPageHandler)
+	// recover from panics and set return status
+	r.Use(middleware.Recoverer)
+
+	//set up routes
+	r.Get("/dash", RouteJobs)
+	r.Get("/dash/", RouteJobs)
+
+	// simple embedded file server for csds & static images, pages etc.
 	embedFileServer(r, eFs, "/", "www")
 	listenAddr := fmt.Sprintf("%s:%d", "", port)
-	http.ListenAndServe(listenAddr, r)
+	// run the server in a thread
+	go http.ListenAndServe(listenAddr, r)
 }
