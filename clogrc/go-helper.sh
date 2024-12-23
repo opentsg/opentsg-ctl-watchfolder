@@ -49,7 +49,7 @@ fGoBuild(){
   esac
 
   # pretty format platform strings
-  pad=$((12-${#goos}-${#goarch}))
+  pad=$((17-${#goos}-${#goarch}))
   spaces="$(echo '----------'|head -c $pad)"
   printf -v tPlatform "for %s %s" "$cos$goos$cX/$car$goarch$cX" "$spaces"
   printf -v bPlatform "(built on %14s)" "$bOSV/$bCPU"
