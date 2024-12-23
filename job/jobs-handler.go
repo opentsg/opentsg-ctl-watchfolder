@@ -79,7 +79,7 @@ func (jobs *JobManagement) UpdateKnownJobs(newJob *JobInfo) {
 			jobs.Known[i].Status = newJob.Status
 			jobs.Known[i].Xmeta = newJob.Xmeta
 			//set the state to something benign if the job is unknown
-D			if jobs.Known[i].Xstate == StateUnknown {
+			if jobs.Known[i].Xstate == StateUnknown {
 				jobs.Known[i].Xstate = StateSeen
 			}
 			return
