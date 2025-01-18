@@ -14,5 +14,47 @@
   "cSpell.dictionaries": [
     "cspell-this-project"
   ],
-  "workbench.colorTheme": "Bearded Theme Black & Emerald Soft"
+  "workbench.colorTheme": "Bearded Theme Black & Emerald Soft",
+  // Default number of spaces a tab is equal to.
+  "editor.tabSize": 2,
+  // Insert spaces when pressing Tab.
+  "editor.insertSpaces": true,
+  // Guess the settings, then use overrides below else defaults
+  "editor.detectIndentation": true,
+  // Default rulers
+  "editor.rulers": [ 79, 80, 120 ],
+  "[html]": {
+    "editor.tabSize": 2,
+    "editor.rulers": [
+      120
+    ]
+  },
+  "[javascript]": {
+    "editor.rulers": [
+      120
+    ],
+    "editor.tabSize": 2
+  },
+  "[typescript]": {
+    "editor.rulers": [
+      120
+    ],
+    "editor.tabSize": 2
+  },
+  "[python]": {
+    "editor.tabSize": 4,
+    "editor.rulers": [
+      79,
+      80,
+      120
+    ]
+  },
+  "[markdown]": {
+    "editor.tabSize": 4,
+    "editor.rulers": [
+      79,
+      80,
+      120
+    ]
+  },
 }                   

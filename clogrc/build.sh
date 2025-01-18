@@ -30,7 +30,7 @@ hash="$(clog git hash head)"                                            # use th
 suffix="" && [[ "$branch" != "main" ]] && suffix="$branch"              # use the branch name as the suffix
 app=opentsg-ctl-watchfolder                                             # command you type to run the build
 title="OpenTSG Render Node"                                             # title of the software
-linkerPath="gitlab.com/mrmxf/opentsg-ctl-watchfolder/semver.SemVerInfo" # go tool objdump -S tmp/opentsg-ctl-watchfolder-amd-lnx|grep /semver.SemVerInfo
+linkerPath="github.com/opentsg/opentsg-ctl-watchfolder/semver.SemVerInfo" # go tool objdump -S tmp/opentsg-ctl-watchfolder-amd-lnx|grep /semver.SemVerInfo
 
 fGoBuild tmp/$app-amd-lnx     linux   amd64 $hash "$suffix" $app "$title" "$linkerPath"
 fGoBuild tmp/$app-amd-win.exe windows amd64 $hash "$suffix" $app "$title" "$linkerPath"

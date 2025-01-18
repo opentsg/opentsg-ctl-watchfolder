@@ -3,7 +3,7 @@
 #
 # Binaries for programs and plugins
 jobs/
-opentsg-ctl-mk8
+/opentsg-ctl-watchfolder
 *.exe
 *.exe~
 *.dll

@@ -14,10 +14,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/opentsg/opentsg-ctl-watchfolder/job"
+	"github.com/opentsg/opentsg-ctl-watchfolder/log"
 	dCopy "github.com/otiai10/copy"
 	"github.com/phsym/console-slog"
-	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/job"
-	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/log"
 )
 
 func setupTestLogger() {

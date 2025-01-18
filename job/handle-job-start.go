@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/shell"
+	"github.com/opentsg/opentsg-ctl-watchfolder/shell"
 )
 
 var dummyJob = "sleep 2 && echo 'dummy job done'"

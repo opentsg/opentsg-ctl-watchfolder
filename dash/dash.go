@@ -12,7 +12,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/job"
+	"github.com/opentsg/opentsg-ctl-watchfolder/job"
 )
 
 var jobs *job.JobManagement

@@ -8,7 +8,7 @@ package main
 import (
 	"embed"
 
-	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/cli"
+	"github.com/opentsg/opentsg-ctl-watchfolder/cli"
 )
 
 //go:embed releases.yaml www dash/templates

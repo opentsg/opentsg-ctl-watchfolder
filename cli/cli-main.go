@@ -16,11 +16,11 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/opentsg/opentsg-ctl-watchfolder/dash"
+	"github.com/opentsg/opentsg-ctl-watchfolder/job"
+	"github.com/opentsg/opentsg-ctl-watchfolder/log"
+	"github.com/opentsg/opentsg-ctl-watchfolder/semver"
 	"github.com/spf13/cobra"
-	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/dash"
-	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/job"
-	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/log"
-	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/semver"
 )
 
 var eFs embed.FS

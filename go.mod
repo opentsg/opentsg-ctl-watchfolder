@@ -1,4 +1,4 @@
-module gitlab.com/mrmxf/opentsg-ctl-watchfolder
+module github.com/opentsg/opentsg-ctl-watchfolder
 
 go 1.21
 

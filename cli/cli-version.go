@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"runtime"
 
+	"github.com/opentsg/opentsg-ctl-watchfolder/semver"
 	"github.com/spf13/cobra"
-	"gitlab.com/mrmxf/opentsg-ctl-watchfolder/semver"
 )
 
 // mostly used for the version string
