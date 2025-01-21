@@ -13,11 +13,6 @@ import (
 	"log/slog"
 )
 
-// QueuePosition returns the integer position of the job in the queue or error
-func (j *JobInfo) ReadJobCompletionStatus(jobs *JobManagement) (int, int, int, error) {
-	return 50, 11, 22, nil
-}
-
 // feed back progress to the UX
 // Check that this is the actual running job. If not, then it failed somehow
 func (j *JobInfo) RunningJob(jobs *JobManagement) {
@@ -34,12 +29,11 @@ func (j *JobInfo) RunningJob(jobs *JobManagement) {
 		return
 	}
 
-	progress, frame, total, err := j.ReadJobCompletionStatus(jobs)
+	logs := j.GetNodeLogs()
 
 	// update the status of the running job
-	if err == nil {
-		meta := fmt.Sprintf("%d %d %d", progress, frame, total)
-		j.SetJobStatus(RUNNING, meta)
-		slog.Debug(fmt.Sprintf("%s %s", _dbg, meta))
-	}
+	progress := (100 * logs.frameCount) / logs.frameTotal
+	meta := fmt.Sprintf("%d %d %d", progress, logs.frameCount, logs.frameTotal)
+	j.SetJobStatus(RUNNING, meta)
+	slog.Debug(fmt.Sprintf("%s %s", _dbg, meta))
 }

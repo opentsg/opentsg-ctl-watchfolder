@@ -5,11 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "main (__TEST__)",
+            "name": "logs",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}",
+            "program": "${workspaceFolder}/__TEST__/loggy.go",
+            "cwd": "${workspaceFolder}/__TEST__",
             "args": [
                 "--debug",
                 "--folder",
@@ -25,7 +26,7 @@
             "args": [
                 "--debug",
                 "--dashboard",
-                "--folder"
+                "--folder",
                 "~/gr/otsg-marimo/src/jobs"
             ]
         },
@@ -38,7 +39,7 @@
             "args": [
                 "--production",
                 "--dashboard",
-                "--folder"
+                "--folder",
                 "~/gr/otsg-marimo/src/jobs"
             ]
         }

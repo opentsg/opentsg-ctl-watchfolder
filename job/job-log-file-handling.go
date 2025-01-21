@@ -22,17 +22,20 @@ type NodeLogLine struct {
 	StatusCode  string    `json:"StatusCode"`
 	RunID       string    `json:"RunID"`
 	WidgetID    string    `json:"WidgetID"`
-	FrameNumber string    `json:"FrameNumber"`
+	FrameNumber int       `json:"FrameNumber"`
 }
 type NodeLogLines struct {
 	errorCount   int
 	frameCount   int
+	frameTotal   int
 	runCount     int
 	lastModified time.Time
+	lastError    string
 	lines        []NodeLogLine
 }
 
-func (j *JobInfo) GetNodeLogs(status JobStatusEnum, meta string) *NodeLogLines {
+// return a summary of the logs
+func (j *JobInfo) GetNodeLogs() *NodeLogLines {
 	logfileMeta, err := os.Stat(string(j.XjobLogPath))
 	if err != nil {
 		// no log file - just return
@@ -48,7 +51,7 @@ func (j *JobInfo) GetNodeLogs(status JobStatusEnum, meta string) *NodeLogLines {
 
 	ref := NodeLogLine{}
 	logs := NodeLogLines{}
-	logLine.lastModified = logfileMeta.ModTime()
+	logs.lastModified = logfileMeta.ModTime()
 
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
@@ -57,6 +60,18 @@ func (j *JobInfo) GetNodeLogs(status JobStatusEnum, meta string) *NodeLogLines {
 		line := scanner.Bytes()
 		logLine := NodeLogLine{}
 		json.Unmarshal(line, &logLine)
+		logs.lines = append(logs.lines, logLine)
+		if ref.RunID != logLine.RunID {
+			//if this is a new run then increment the run count and zero errors
+			ref.RunID = logLine.RunID
+			logs.runCount += 1
+			logs.errorCount = 0
+		}
+		if logLine.Level == "ERROR" {
+			logs.errorCount += 1
+			logs.lastError = logLine.Msg
+		}
+		logs.frameCount = logLine.FrameNumber + 1
 	}
 	return &logs
 }

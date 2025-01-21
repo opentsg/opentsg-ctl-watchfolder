@@ -32,6 +32,7 @@ func ShowDashboard(port int, eFs embed.FS, jobsToView *job.JobManagement, isProd
 	//set up routes
 	r.Get("/dash", RouteJobs)
 	r.Get("/dash/", RouteJobs)
+	r.Get("/dash/{jobId}", RouteShowLogs)
 
 	// simple embedded file server for csds & static images, pages etc.
 	embedFileServer(r, eFs, "/", "www")

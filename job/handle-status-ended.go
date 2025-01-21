@@ -43,21 +43,15 @@ func (j *JobInfo) JobEndCheck(jobs *JobManagement) {
 	//clear the checking flag
 	j.Xstate = StateDone
 
-	logJson := j.GetMostRecentLogs()
+	logs := j.GetNodeLogs()
 
-	// if there is no log file, then do nothing
-	if logJson == nil {
+	// if there is no log file, then something went wrong
+	if logs == nil {
+		j.SetJobStatus(FAILED, "no logs produced by render")
 		return
 	}
 
-	// iterate over primary keys
-	for i := range logJson {
-		if i == "level" && logJson["level"].(string) == "ERROR" {
-			meta, err := logJson["msg"].(string)
-			if err {
-				meta = "No message returned from node"
-			}
-			j.SetJobStatus(FAILED, meta)
-		}
+	if logs.errorCount > 0 {
+		j.SetJobStatus(FAILED, logs.lastError)
 	}
 }

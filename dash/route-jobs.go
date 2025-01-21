@@ -9,8 +9,11 @@ import (
 	"html/template"
 	"log/slog"
 	"net/http"
+	"path/filepath"
 	"sort"
 	"time"
+
+	"github.com/go-chi/chi/v5"
 )
 
 const (
@@ -83,11 +86,35 @@ func RouteJobs(w http.ResponseWriter, r *http.Request) {
 
 	// assemble main
 	err = tpl["main"].Execute(w, TplMain{
-		Title: "Test render",
+		Title: "Dash Opentsg",
 		Main:  template.HTML(jobsHTML.Bytes()),
 	})
 	if err != nil {
 		slog.Error("main template render error", "err", err)
 	}
 
+}
+
+// locat the Node logfile
+func findLogFilename(id string) string, error {
+	filepath.Join(jobs.Folder, id, id.log)
+	_, err :=os.Stat(filepath)
+	return filepath, err
+}
+
+// package dash provides a simple dashboard for the job controller
+func RouteShowLogs(w http.ResponseWriter, r *http.Request) {
+	jobId := chi.URLParam(r, "JobId")
+	logFilename , err := findLogFilename(jobId)
+	if err != nil {
+			// assemble main
+	err = tpl["main"].Execute(w, TplMain{
+		Title: "job not found",
+		Main:  "Job Logs not found",
+	})
+	if err != nil {
+		slog.Error("main template render error", "err", err)
+	}
+
+	}
 }
