@@ -94,7 +94,8 @@ type JobInfo struct {
 	XfirstSeenAt  string
 	XqueuedAt     string
 	Xcli          string
-	Xage          string
+	XDurationStr  string
+	XAgeStr       string
 
 	//the following parameters are external and follow SMPTE ST2126:2020
 	Id              URL           // URL pointing to the job instance in the job processor

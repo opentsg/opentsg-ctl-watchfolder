@@ -24,4 +24,4 @@
 snippets:
   git:
     vcode: cat cli/releases.yaml|grep version|head -1|grep -oE '[0-9]+\.[0-9]+\.[0-9]'
-    
+  testctl:  go run . --production --dashboard --folder ~/gr/otsg-marimo/src/jobs/

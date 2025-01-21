@@ -1,9 +1,9 @@
 <tr>
-  <td>job{{printf "%04d" .XjobId}}</td>
-  <td>{{.Status}}</td>
-  <td>{{.XqueuedAt}}</td>
-  <td>{{.ActualStartDate}}</td>
-  <td>{{.ActualEndDate}}</td>
-  <td>{{.ActualDuration}}</td>
+  <td><code>job{{printf "%04d" .XjobId}}</code></td>
+  <td><code>{{.Status}}</code></td>
+  <td><small>{{.ActualStartDate}}</small></td>
+  <td><small>{{.ActualEndDate}}</small></td>
+  <td><small>{{.XDurationStr}}</small></td>
+  <td><small>{{.XAgeStr}}</small></td>
   <td>{{.Xmeta}}</td>
 </tr>

@@ -49,9 +49,9 @@ var mainCmd = &cobra.Command{
 		// set the log level based on flags
 		switch {
 		case LogLevelDebug && ProductionLogging:
-			log.UseProductionJSONErrorLogger()
+			log.UsePrettyWarnLogger()
 		case (!LogLevelDebug) && ProductionLogging:
-			log.UseJSONInfoLogger()
+			log.UseProductionJSONErrorLogger()
 		case LogLevelDebug && (!ProductionLogging):
 			log.UsePrettyDebugLogger()
 		case (!LogLevelDebug) && (!ProductionLogging):
@@ -138,7 +138,7 @@ func init() {
 
 	// logging flags
 	mainCmd.PersistentFlags().BoolVarP(&LogLevelDebug, "debug", "D", false, "set logging level to debug (or info production mode)")
-	mainCmd.PersistentFlags().BoolVarP(&LogLevelDebug, "production", "P", false, "production mode - JSON logging at error / info level")
+	mainCmd.PersistentFlags().BoolVarP(&ProductionLogging, "production", "P", false, "production mode - JSON logging at error / info level")
 
 	//dashboard flag
 	mainCmd.PersistentFlags().BoolVarP(&ShowDashboard, "dashboard", "d", true, "show dashboard on port 3001")

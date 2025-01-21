@@ -10,7 +10,30 @@ import (
 	"log/slog"
 	"net/http"
 	"sort"
+	"time"
 )
+
+const (
+	Duration_2min = (1000 * 60 * 2)
+	Duration_3hr  = (1000 * 60 * 60 * 3)
+	Duration_48hr = (1000 * 60 * 60 * 48)
+)
+
+func friendlyDuration(durMs int) string {
+	if durMs == 0 {
+		return "-"
+	}
+	if durMs <= Duration_2min {
+		return fmt.Sprintf("%d secs", durMs/1000)
+	}
+	if durMs <= Duration_3hr {
+		return fmt.Sprintf("%d mins", durMs/(1000*60))
+	}
+	if durMs <= Duration_48hr {
+		return fmt.Sprintf("%d hrs", durMs/(1000*60*60))
+	}
+	return fmt.Sprintf("%d days", durMs/(1000*60*60*24))
+}
 
 // package dash provides a simple dashboard for the job controller
 func RouteJobs(w http.ResponseWriter, r *http.Request) {
@@ -32,17 +55,15 @@ func RouteJobs(w http.ResponseWriter, r *http.Request) {
 		return known[i].XjobId > known[j].XjobId
 	})
 	for i, j := range known {
-		//format the duration into the Xage field
-		known[i].Xage = "-"
-		if j.ActualDuration > 1 {
-			known[i].Xage = fmt.Sprintf("%d secs", j.ActualDuration/1000)
+		//format the duration & age
+		known[i].XDurationStr = friendlyDuration(j.ActualDuration)
+		start, err := time.Parse("2006-01-02 15:04:05", j.ActualStartDate)
+		if err != nil {
+			known[i].XAgeStr = ""
+		} else {
+			known[i].XAgeStr = friendlyDuration(int(time.Since(start) / 1000000))
 		}
-		if j.ActualDuration > 120000 {
-			known[i].Xage = fmt.Sprintf("%d mins", j.ActualDuration/60000)
-		}
-		if j.ActualDuration > (1000 * 60 * 60 * 3) {
-			known[i].Xage = fmt.Sprintf("%d hrs", j.ActualDuration/(1000*60*60))
-		}
+
 		tmp := bytes.Buffer{}
 		err = tpl["job"].Execute(&tmp, j)
 		if err != nil {
