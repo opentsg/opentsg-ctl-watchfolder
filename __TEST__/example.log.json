@@ -1,0 +1,18 @@
+{
+  "time": "2025-01-21T14:56:57.769033089Z",
+  "level": "DEBUG",
+  "msg": "{\"SetUpTime(ns)\":81412,\"WidgetRunTime(ns)\":90,\"QueueTime(ns)\":70,\"CompositeTime(ns)\":0,\"type\":\"builtin.canvasoptions\",\"widgetID\":\"canvas\",\"ZPosition\":0}",
+  "StatusCode": "100.999",
+  "RunID": "UlaMkqL9hANogmJM",
+  "WidgetID": "canvas",
+  "FrameNumber": 0
+}
+{
+  "time": "2025-01-21T14:56:57.891956933Z",
+  "level": "INFO",
+  "msg": "generating frame 0/0, gen: 000172.0 ms, save: 000122.8ms, errors:0",
+  "StatusCode": "200.003",
+  "RunID": "tEO0GlMaLz5Pv8_N",
+  "WidgetID": "core.tsg",
+  "FrameNumber": 0
+}

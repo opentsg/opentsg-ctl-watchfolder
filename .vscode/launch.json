@@ -17,19 +17,20 @@
             ]
         },
         {
-            "name": "otsg blink dbg",
+            "name": "otsg dbg blink",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
             "args": [
                 "--debug",
-                "--folder",
-                "/home/bruce/gr/otsg-marimo/src/jobs"
+                "--dashboard",
+                "--folder"
+                "~/gr/otsg-marimo/src/jobs"
             ]
         },
         {
-            "name": "otsg blink prod",
+            "name": "otsg prod blink",
             "type": "go",
             "request": "launch",
             "mode": "auto",

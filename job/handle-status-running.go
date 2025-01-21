@@ -14,7 +14,7 @@ import (
 )
 
 // QueuePosition returns the integer position of the job in the queue or error
-func (j *JobInfo) JobCompletion(jobs *JobManagement) (int, int, int, error) {
+func (j *JobInfo) ReadJobCompletionStatus(jobs *JobManagement) (int, int, int, error) {
 	return 50, 11, 22, nil
 }
 
@@ -34,7 +34,7 @@ func (j *JobInfo) RunningJob(jobs *JobManagement) {
 		return
 	}
 
-	progress, frame, total, err := j.JobCompletion(jobs)
+	progress, frame, total, err := j.ReadJobCompletionStatus(jobs)
 
 	// update the status of the running job
 	if err == nil {

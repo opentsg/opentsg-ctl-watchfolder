@@ -58,9 +58,9 @@ func (j *JobInfo) ReadLockFileMetadata() (status string, meta string, start stri
 	status, meta, err = j.ParseLockFileString(textLine)
 
 	mainJson := filepath.Join(string(j.XfolderPath), "main.json")
-	mainfileMeta, err := os.Stat(string(mainJson))
+	mainfileMeta, mainerr := os.Stat(string(mainJson))
 
-	if err == nil {
+	if mainerr == nil {
 		// use timestamp of main.json as the best guess of start
 		start = mainfileMeta.ModTime().Format("2006-01-02 15:04:05")
 		ns := lockfileMeta.ModTime().Sub(mainfileMeta.ModTime())
