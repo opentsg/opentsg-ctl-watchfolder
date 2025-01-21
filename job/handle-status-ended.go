@@ -51,7 +51,7 @@ func (j *JobInfo) JobEndCheck(jobs *JobManagement) {
 	}
 
 	// iterate over primary keys
-	for i, _ := range logJson {
+	for i := range logJson {
 		if i == "level" && logJson["level"].(string) == "ERROR" {
 			meta, err := logJson["msg"].(string)
 			if err {
@@ -60,5 +60,4 @@ func (j *JobInfo) JobEndCheck(jobs *JobManagement) {
 			j.SetJobStatus(FAILED, meta)
 		}
 	}
-	return
 }

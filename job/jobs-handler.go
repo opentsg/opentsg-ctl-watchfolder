@@ -44,12 +44,15 @@ func (jobs *JobManagement) ParseJobs() {
 			XjobLogPath:   URL(filepath.Join(jFolder, jobs.JobLogName)),
 			Id:            URL(absFolder),
 		}
-		status, meta, err := tmp.ReadLockFileMetadata()
+		status, meta, start, end, age, err := tmp.ReadLockFileMetadata()
 		if err == nil {
 			intId, _ := strconv.Atoi(jFolder[len(jFolder)-4:])
 			tmp.XjobId = intId
 			tmp.Status = JobStatusEnum(status)
 			tmp.Xmeta = meta
+			tmp.ActualStartDate = start
+			tmp.ActualEndDate = end
+			tmp.ActualDuration = age
 			jobs.UpdateKnownJobs(&tmp)
 			if DEBUG_PARSER {
 				slog.Debug(fmt.Sprintf("status job%04d (%-9s) meta(%-12s)  << %s", tmp.XjobId, status, meta, tmp.XlockFilePath))

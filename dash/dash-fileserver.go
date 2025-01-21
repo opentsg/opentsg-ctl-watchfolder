@@ -29,7 +29,7 @@ func embedFileServer(r chi.Router, eFs embed.FS, route string, eFsRootPath strin
 
 	// check for trailing slash
 	if route != "/" && route[len(route)-1] != '/' {
-		r.Get(route, http.RedirectHandler(route+"/", 301).ServeHTTP)
+		r.Get(route, http.RedirectHandler(route+"/", http.StatusMovedPermanently).ServeHTTP)
 		route += "/"
 	}
 	route += "*"

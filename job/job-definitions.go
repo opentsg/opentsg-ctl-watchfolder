@@ -18,7 +18,8 @@ import (
 
 // a glob expression for matching job
 const globExpression = "job????"
-const jobLogFile = "_ctl-watchfolder.log"
+
+// const jobLogFile = "_ctl-watchfolder.log"
 
 // this is the status that is exported externally
 type JobStatusEnum string
@@ -93,6 +94,7 @@ type JobInfo struct {
 	XfirstSeenAt  string
 	XqueuedAt     string
 	Xcli          string
+	Xage          string
 
 	//the following parameters are external and follow SMPTE ST2126:2020
 	Id              URL           // URL pointing to the job instance in the job processor

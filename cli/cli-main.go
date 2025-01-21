@@ -55,7 +55,7 @@ var mainCmd = &cobra.Command{
 		case LogLevelDebug && (!ProductionLogging):
 			log.UsePrettyDebugLogger()
 		case (!LogLevelDebug) && (!ProductionLogging):
-			log.UsePrettyInfoLogger()
+			log.UsePrettyWarnLogger()
 		}
 
 		// tidy up the folder expression and check it exists
@@ -95,7 +95,7 @@ var mainCmd = &cobra.Command{
 		// if we have to show the Dashboard then start the server
 		if ShowDashboard {
 			slog.Debug("root command: show dashboard")
-			dash.ShowDashboard(3001, eFs, jobs)
+			dash.ShowDashboard(3001, eFs, jobs, ProductionLogging)
 		}
 
 		//init the jobs to fast start the polling

@@ -17,13 +17,15 @@ import (
 
 var jobs *job.JobManagement
 
-func ShowDashboard(port int, eFs embed.FS, jobsToView *job.JobManagement) {
+func ShowDashboard(port int, eFs embed.FS, jobsToView *job.JobManagement, isProductionLogging bool) {
 	jobs = jobsToView
 	initTemplates(eFs)
 	r := chi.NewRouter()
 
-	// use the default logger
-	r.Use(middleware.Logger)
+	if !isProductionLogging {
+		// use the default logger when not in production mode
+		r.Use(middleware.Logger)
+	}
 	// recover from panics and set return status
 	r.Use(middleware.Recoverer)
 

@@ -30,6 +30,13 @@ func UsePrettyInfoLogger() {
 	slog.SetDefault(Logger)
 }
 
+func UsePrettyWarnLogger() {
+	Logger = slog.New(
+		console.NewHandler(os.Stderr,
+			&console.HandlerOptions{Level: slog.LevelWarn}))
+	slog.SetDefault(Logger)
+}
+
 // JobLogger is a no-color version of the PrettyInfoLogger that is created
 // to append to the job log folder
 func JobLogger(path string) (*slog.Logger, *os.File) {

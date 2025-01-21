@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -33,11 +34,18 @@ func (j *JobInfo) ParseLockFileString(s string) (status string, meta string, err
 }
 
 // GetJobMetadata retrieves the metadata from job folders
-func (j *JobInfo) ReadLockFileMetadata() (status string, meta string, err error) {
+func (j *JobInfo) ReadLockFileMetadata() (status string, meta string, start string, end string, age int, err error) {
+	lockfileMeta, err := os.Stat(string(j.XlockFilePath))
+	if err != nil {
+		return "", "", "", "", 0, err
+	} else {
+		// use timestamp of the lockfile as the best guess of end
+		end = lockfileMeta.ModTime().Format("2006-01-02 15:04:05")
+	}
 
 	file, err := os.Open(string(j.XlockFilePath))
 	if err != nil {
-		return "", "", err
+		return "", "", "", "", 0, err
 	}
 	defer file.Close()
 
@@ -48,6 +56,18 @@ func (j *JobInfo) ReadLockFileMetadata() (status string, meta string, err error)
 	// just use the first line (for now)
 	textLine := scanner.Text()
 	status, meta, err = j.ParseLockFileString(textLine)
+
+	mainJson := filepath.Join(string(j.XfolderPath), "main.json")
+	mainfileMeta, err := os.Stat(string(mainJson))
+
+	if err == nil {
+		// use timestamp of main.json as the best guess of start
+		start = mainfileMeta.ModTime().Format("2006-01-02 15:04:05")
+		ns := lockfileMeta.ModTime().Sub(mainfileMeta.ModTime())
+		// return job age in milliseconds
+		age = int(ns / 1000000)
+	}
+
 	return
 }
 
@@ -62,7 +82,10 @@ func (j *JobInfo) SetJobStatus(status JobStatusEnum, meta string) {
 	}
 
 	// check by reading back
-	st, me, _ := j.ReadLockFileMetadata()
+	st, me, start, end, duration, _ := j.ReadLockFileMetadata()
 	j.Status = JobStatusEnum(st)
 	j.Xmeta = me
+	j.ActualStartDate = start
+	j.ActualEndDate = end
+	j.ActualDuration = duration
 }

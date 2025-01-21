@@ -9,6 +9,7 @@ import (
 	"html/template"
 	"log/slog"
 	"net/http"
+	"sort"
 )
 
 // package dash provides a simple dashboard for the job controller
@@ -25,7 +26,23 @@ func RouteJobs(w http.ResponseWriter, r *http.Request) {
 
 	//render each job outside the template to allow sorting etc.
 	jobsData.JobTableHTML = ""
-	for _, j := range jobs.Known {
+	// need to reverse sort the jobs array:
+	known := jobs.Known
+	sort.Slice(known, func(i, j int) bool {
+		return known[i].XjobId > known[j].XjobId
+	})
+	for i, j := range known {
+		//format the duration into the Xage field
+		known[i].Xage = "-"
+		if j.ActualDuration > 1 {
+			known[i].Xage = fmt.Sprintf("%d secs", j.ActualDuration/1000)
+		}
+		if j.ActualDuration > 120000 {
+			known[i].Xage = fmt.Sprintf("%d mins", j.ActualDuration/60000)
+		}
+		if j.ActualDuration > (1000 * 60 * 60 * 3) {
+			known[i].Xage = fmt.Sprintf("%d hrs", j.ActualDuration/(1000*60*60))
+		}
 		tmp := bytes.Buffer{}
 		err = tpl["job"].Execute(&tmp, j)
 		if err != nil {
