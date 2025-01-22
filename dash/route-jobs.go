@@ -9,11 +9,8 @@ import (
 	"html/template"
 	"log/slog"
 	"net/http"
-	"path/filepath"
 	"sort"
 	"time"
-
-	"github.com/go-chi/chi/v5"
 )
 
 const (
@@ -67,8 +64,15 @@ func RouteJobs(w http.ResponseWriter, r *http.Request) {
 			known[i].XAgeStr = friendlyDuration(int(time.Since(start) / 1000000))
 		}
 
+		nodeLogPath, _ := findNodeLogFilePath(j.IdString())
+		studioLogPath, _ := findStudioLogFilePath(j.IdString())
+		data := TplJob{
+			J:         j,
+			NodeLog:   nodeLogPath,
+			StudioLog: studioLogPath,
+		}
 		tmp := bytes.Buffer{}
-		err = tpl["job"].Execute(&tmp, j)
+		err = tpl["job"].Execute(&tmp, data)
 		if err != nil {
 			slog.Error("job template render error", "job", j.XjobId, "err", err)
 		}
@@ -93,28 +97,4 @@ func RouteJobs(w http.ResponseWriter, r *http.Request) {
 		slog.Error("main template render error", "err", err)
 	}
 
-}
-
-// locat the Node logfile
-func findLogFilename(id string) string, error {
-	filepath.Join(jobs.Folder, id, id.log)
-	_, err :=os.Stat(filepath)
-	return filepath, err
-}
-
-// package dash provides a simple dashboard for the job controller
-func RouteShowLogs(w http.ResponseWriter, r *http.Request) {
-	jobId := chi.URLParam(r, "JobId")
-	logFilename , err := findLogFilename(jobId)
-	if err != nil {
-			// assemble main
-	err = tpl["main"].Execute(w, TplMain{
-		Title: "job not found",
-		Main:  "Job Logs not found",
-	})
-	if err != nil {
-		slog.Error("main template render error", "err", err)
-	}
-
-	}
 }

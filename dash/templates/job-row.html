@@ -1,0 +1,15 @@
+<tr>
+  <td><code>job{{printf "%04d" .J.XjobId}}</code>
+    {{- if .NodeLog }}
+    <a href="{{printf "job%04d" .J.XjobId}}">🪵</a>
+    {{ end -}}
+    {{- if .StudioLog }}
+    <a href="studio_logs">ℹ️</a>{{ end -}}
+  </td>
+  <td><code>{{.J.Status}}</code></td>
+  <td><small>{{.J.ActualStartDate}}</small></td>
+  <td><small>{{.J.ActualEndDate}}</small></td>
+  <td><small>{{.J.XDurationStr}}</small></td>
+  <td><small>{{.J.XAgeStr}}</small></td>
+  <td>{{.J.Xmeta}}</td>
+</tr>

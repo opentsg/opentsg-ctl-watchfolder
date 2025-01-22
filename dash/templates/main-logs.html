@@ -1,0 +1,37 @@
+{{define "main"}}
+<table class="secondary">
+  <thead>
+    <tr>
+      <th>Run#</th>
+      <th>Frame#</th>
+      <th>Level</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <tr>
+      <td colspan="4">
+        <strong>Summary:</strong>
+        Runs:  {{printf "%d" .L.errorCount}},
+        Frames: {{printf "%d" (.L.frameCount)}},
+        Errors: {{printf "%d" .L.errorCount}}
+        <br>
+        file: {{.LogSource}}
+      </td>
+    </tr>
+    <tr>
+      <td>Eve</td>
+      <td>San Francisco, USA</td>
+    </tr>
+    <tr>
+      <td>Martin</td>
+      <td>New York, USA</td>
+    </tr>
+    <tr>
+      <td>Sarah</td>
+      <td>London, UK</td>
+    </tr>
+  </tbody>
+</table>
+{{end}}

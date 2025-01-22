@@ -9,6 +9,7 @@ package job
 // logic file that defines rules
 
 import (
+	"fmt"
 	"html/template"
 	"sync"
 	"time"
@@ -130,4 +131,9 @@ type JobManagement struct {
 // SMPTE ST2126 timestamp
 func (j *JobInfo) TimeStamp() string {
 	return time.Now().Format(time.DateTime)
+}
+
+// convert numerical id to full string "job0123"
+func (j *JobInfo) IdString() string {
+	return fmt.Sprintf("job%04d", j.XjobId)
 }
