@@ -86,17 +86,18 @@ type ErrorInfo *rfc7807.ProblemDetail
 
 type JobInfo struct {
 	//internal properties
-	XjobId        int
-	XfolderPath   URL
-	XlockFilePath URL
-	XjobLogPath   URL
-	Xmeta         string
-	Xstate        StateEnum
-	XfirstSeenAt  string
-	XqueuedAt     string
-	Xcli          string
-	XDurationStr  string
-	XAgeStr       string
+	XjobId         int
+	XfolderPath    URL
+	XlockFilePath  URL
+	XjobLogPath    URL
+	XstudioLogPath URL
+	Xmeta          string
+	Xstate         StateEnum
+	XfirstSeenAt   string
+	XqueuedAt      string
+	Xcli           string
+	XDurationStr   string
+	XAgeStr        string
 
 	//the following parameters are external and follow SMPTE ST2126:2020
 	Id              URL           // URL pointing to the job instance in the job processor
@@ -116,14 +117,16 @@ type JobInfo struct {
 }
 
 type JobManagement struct {
-	View         template.HTML
-	JobRunning   *JobInfo
-	Known        []JobInfo
-	Queue        []*JobInfo
-	Folder       string
-	LockFileName string
-	JobLogName   string
-	Xcli         string
+	View          template.HTML
+	JobRunning    *JobInfo
+	Known         []JobInfo
+	Queue         []*JobInfo
+	Folder        string
+	LockFileName  string
+	LogCtlName    string
+	LogStudioName string
+	LogsFolder    string
+	Xcli          string
 
 	Wg sync.WaitGroup
 }

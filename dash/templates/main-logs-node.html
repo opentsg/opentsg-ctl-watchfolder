@@ -1,0 +1,38 @@
+{{define "main"}}
+<table class="secondary">
+  <thead>
+    <tr>
+      <th colspan="4">
+        <h1>Node <small>(render)</small> logs</h1>
+      </th>
+    </tr>
+    <tr>
+      <th>Run#</th>
+      <th>Frame#</th>
+      <th>Level</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <tr>
+      <td colspan="4">
+        <strong>Summary:</strong>
+        Runs:  {{printf "%d" .L.RunCount}},
+        Frames: {{printf "%d" (.L.FrameCount)}},
+        Errors: {{printf "%d" .L.ErrorCount}}
+        <br>
+        file: {{.LogSource}}
+      </td>
+    </tr>
+    {{range (.L.Lines)}}
+    <tr>
+      <td>{{.RunId}}</td>
+      <td>{{.FrameNumber}}</td>
+      <td>{{.Level}}</td>
+      <td>{{.Msg}}</td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{end}}

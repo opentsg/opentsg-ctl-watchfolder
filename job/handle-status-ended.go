@@ -51,7 +51,7 @@ func (j *JobInfo) JobEndCheck(jobs *JobManagement) {
 		return
 	}
 
-	if logs.errorCount > 0 {
-		j.SetJobStatus(FAILED, logs.lastError)
+	if logs.ErrorCount > 0 {
+		j.SetJobStatus(FAILED, logs.LastError)
 	}
 }

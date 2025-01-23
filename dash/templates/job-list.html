@@ -1,10 +1,18 @@
+{{define "job-list"}}
+{{range .}}
+{{template "job-data" .}}
+{{end}}
+{{end}}
+{{define "job-data"}}
 <tr>
   <td><code>job{{printf "%04d" .J.XjobId}}</code>
     {{- if .NodeLog }}
-    <a href="{{printf "job%04d" .J.XjobId}}">🪵</a>
+    {{$url := printf "job%04d" .J.XjobId}}
+    <a href={{$url}}>🪵</a>
     {{ end -}}
     {{- if .StudioLog }}
-    <a href="printf "job%04d/studio-logs" .J.XjobId">ℹ️</a>{{ end -}}
+    {{$url := printf "job%04d/studio-logs" .J.XjobId}}
+    <a href={{$url}}>ℹ️</a>{{ end -}}
   </td>
   <td><code>{{.J.Status}}</code></td>
   <td><small>{{.J.ActualStartDate}}</small></td>
@@ -13,3 +21,4 @@
   <td><small>{{.J.XAgeStr}}</small></td>
   <td>{{.J.Xmeta}}</td>
 </tr>
+{{end}}

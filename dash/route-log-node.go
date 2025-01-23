@@ -13,43 +13,36 @@ import (
 	"github.com/opentsg/opentsg-ctl-watchfolder/job"
 )
 
-type TplLogs struct {
-	L         *job.NodeLogLines
-	Title     string
-	LogSource string
-}
-
-// locate the Node logfile
+// locate the Node log file
 func findNodeLogFilePath(id string) (logFilePath string, err error) {
-	logFilePath = filepath.Join(jobs.Folder, id, "_logs", id+".log")
+	logFilePath = filepath.Join(jobs.Folder, id, jobs.LogsFolder, id+".log")
 	_, err = os.Stat(logFilePath)
+	if err != nil {
+		return "", err
+	}
 	return
 }
 
-// locate the Studio logfile
+// locate the Studio log file
 func findStudioLogFilePath(id string) (logFilePath string, err error) {
-	logFilePath = filepath.Join(jobs.Folder, id, "opentsg-studio")
+	logFilePath = filepath.Join(jobs.Folder, id, jobs.LogsFolder, jobs.LogStudioName)
 	_, err = os.Stat(logFilePath)
+	if err != nil {
+		return "", err
+	}
 	return
 }
 
 // package dash provides a simple dashboard for the job controller
-func RouteShowLogs(w http.ResponseWriter, r *http.Request) {
+func RouteNodeLogs(w http.ResponseWriter, r *http.Request) {
 	jobId := chi.URLParam(r, "jobId")
-	nodeLogPath, err := findNodeLogFilePath(jobId)
+	path, err := findNodeLogFilePath(jobId)
 	if err != nil {
-		// assemble main
-		err = tpl["main"].Execute(w, TplMain{
-			Title: "job not found",
-			Main:  "Job Logs not found",
-		})
-		if err != nil {
-			slog.Error("main template render error", "err", err)
-		}
+		// return an error view
+		tpl.err.ExecuteTemplate(w, "page", TDErr{Title: jobId, Error: "Job Logs not found"})
 		return
 	}
-	studioLogPath, _ := findStudioLogFilePath(jobId)
-	slog.Info("showing logs", "job", jobId, "log", nodeLogPath, "studio", studioLogPath)
+	slog.Debug("showing node logs", "job", jobId, "log", path)
 
 	var j *job.JobInfo
 	for i, jj := range jobs.Known {
@@ -59,18 +52,17 @@ func RouteShowLogs(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if j == nil {
-		// assemble main
-		err = tpl["main"].Execute(w, TplMain{
-			Title: "job not found",
-			Main:  "Job Logs not found",
-		})
+		// return an error view
+		tpl.err.ExecuteTemplate(w, "page", TDErr{Title: jobId, Error: "Job not found"})
+		return
 	}
-	data := TplLogs{
+	logs := j.GetNodeLogs()
+	data := TDNodeLogs{
 		Title:     jobId + " logs (opentsg-node)",
-		L:         j.GetNodeLogs(),
-		LogSource: nodeLogPath,
+		L:         logs,
+		LogSource: path,
 	}
-	err = dashTpl.logs.Execute(w, data)
+	err = tpl.nodeLogs.ExecuteTemplate(w, "page", data)
 	if err != nil {
 		slog.Error("logs template render error", "err", err)
 	}

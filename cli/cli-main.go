@@ -85,11 +85,13 @@ var mainCmd = &cobra.Command{
 		startMsg := fmt.Sprintf("Minikube Watchfolder Controller (%s)", jobsFolder)
 		slog.Info(startMsg)
 
-		//initialise asn empty list of jobs
+		//initialise an empty list of jobs
 		jobs := &job.JobManagement{
-			Folder:       jobsFolder,
-			LockFileName: "_status.lock",
-			JobLogName:   "_ctl-watchfolder.log",
+			Folder:        jobsFolder,
+			LockFileName:  "_status.lock",
+			LogCtlName:    "_ctl-watchfolder.log",
+			LogStudioName: "opentsg-studio.log",
+			LogsFolder:    "_logs",
 		}
 
 		// if we have to show the Dashboard then start the server

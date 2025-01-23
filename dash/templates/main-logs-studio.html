@@ -1,0 +1,22 @@
+{{define "main"}}
+<table class="secondary">
+  <thead>
+    <tr>
+      <th>
+        <h1>Studio <small>(ui)</small> logs</h1>
+      </th>
+    </tr>
+    <tr>
+      <th>Log Message</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    {{range (.L)}}
+    <tr>
+      <td><small>{{.}}</small></td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{end}}

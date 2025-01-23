@@ -32,8 +32,8 @@ func (j *JobInfo) RunningJob(jobs *JobManagement) {
 	logs := j.GetNodeLogs()
 
 	// update the status of the running job
-	progress := (100 * logs.frameCount) / logs.frameTotal
-	meta := fmt.Sprintf("%d %d %d", progress, logs.frameCount, logs.frameTotal)
+	progress := (100 * logs.FrameCount) / logs.FrameTotal
+	meta := fmt.Sprintf("%d %d %d", progress, logs.FrameCount, logs.FrameTotal)
 	j.SetJobStatus(RUNNING, meta)
 	slog.Debug(fmt.Sprintf("%s %s", _dbg, meta))
 }

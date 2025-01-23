@@ -20,29 +20,30 @@ type NodeLogLine struct {
 	Level       string    `json:"level"`
 	Msg         string    `json:"msg"`
 	StatusCode  string    `json:"StatusCode"`
-	RunID       string    `json:"RunID"`
-	WidgetID    string    `json:"WidgetID"`
+	RunId       string    `json:"RunID"`
+	WidgetId    string    `json:"WidgetID"`
 	FrameNumber int       `json:"FrameNumber"`
 }
 type NodeLogLines struct {
-	errorCount   int
-	frameCount   int
-	frameTotal   int
-	runCount     int
-	lastModified time.Time
-	lastError    string
-	lines        []NodeLogLine
+	ErrorCount   int
+	FrameCount   int
+	FrameTotal   int
+	RunCount     int
+	LastModified time.Time
+	LastError    string
+	Lines        []NodeLogLine
 }
 
 // return a summary of the logs
 func (j *JobInfo) GetNodeLogs() *NodeLogLines {
-	logfileMeta, err := os.Stat(string(j.XjobLogPath))
+	path := string(j.XjobLogPath)
+	logfileMeta, err := os.Stat(path)
 	if err != nil {
 		// no log file - just return
 		return nil
 	}
 
-	file, err := os.Open(string(j.XjobLogPath))
+	file, err := os.Open(path)
 	if err != nil {
 		// maybe the file is locked - either way, return
 		return nil
@@ -51,7 +52,7 @@ func (j *JobInfo) GetNodeLogs() *NodeLogLines {
 
 	ref := NodeLogLine{}
 	logs := NodeLogLines{}
-	logs.lastModified = logfileMeta.ModTime()
+	logs.LastModified = logfileMeta.ModTime()
 
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
@@ -60,18 +61,46 @@ func (j *JobInfo) GetNodeLogs() *NodeLogLines {
 		line := scanner.Bytes()
 		logLine := NodeLogLine{}
 		json.Unmarshal(line, &logLine)
-		logs.lines = append(logs.lines, logLine)
-		if ref.RunID != logLine.RunID {
+		logs.Lines = append(logs.Lines, logLine)
+		if ref.RunId != logLine.RunId {
 			//if this is a new run then increment the run count and zero errors
-			ref.RunID = logLine.RunID
-			logs.runCount += 1
-			logs.errorCount = 0
+			ref.RunId = logLine.RunId
+			logs.RunCount += 1
+			logs.ErrorCount = 0
 		}
 		if logLine.Level == "ERROR" {
-			logs.errorCount += 1
-			logs.lastError = logLine.Msg
+			logs.ErrorCount += 1
+			logs.LastError = logLine.Msg
 		}
-		logs.frameCount = logLine.FrameNumber + 1
+		logs.FrameCount = logLine.FrameNumber + 1
+	}
+	return &logs
+}
+
+// return lines from the studio logs
+func (j *JobInfo) GetStudioLogs() *[]string {
+	path := string(j.XstudioLogPath)
+	_, err := os.Stat(path)
+	if err != nil {
+		// no log file - just return
+		return nil
+	}
+
+	file, err := os.Open(path)
+	if err != nil {
+		// maybe the file is locked - either way, return
+		return nil
+	}
+	defer file.Close()
+
+	logs := []string{}
+
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
+
+	for scanner.Scan() {
+		line := string(scanner.Bytes())
+		logs = append(logs, line)
 	}
 	return &logs
 }

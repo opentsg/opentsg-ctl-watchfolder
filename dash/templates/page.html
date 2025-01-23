@@ -3,22 +3,34 @@
 <html lang="en">
 
 <head>
-  {{template "head"}}
-  {{template "styles"}}
+  {{block "head" .}}
+  <title>Page Template</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="keywords" content="opentsg, dashboard, picniccss">
+  <meta name="description" content="A simple opentsg job dashboard">
+  <link rel="stylesheet" href="/picnic.min.css">
+  <link rel="stylesheet" href="/site.css">
+  <link rel="icon" href="/img/favicon-32x32.png" type="image/png">
+  {{end}}
+  {{block "styles" .}}{{end}}
 </head>
 
 <body class="dash">
-  {{template "nav"}}
+  {{block "nav" .}}{{end}}
   <header>
-    {{template "header"}}
+    {{block "header" .}}{{end}}
   </header>
   <main>
-    {{template "main"}}
+    {{block "main" .}}
+    Override any block with a new template to replace
+    the default contents.
+    {{end}}
   </main>
   <footer>
-    {{template "footer"}}
+    {{block "footer" .}}{{end}}
   </footer>
-  {{template "last"}}
+  {{block "last" .}}{{end}}
 </body>
 
 </html>

@@ -140,7 +140,9 @@ visualise
 watchfolder
 Worktree
 wsync
+Xfolder
 Xjob
 Xstate
+Xstudio
 yeswritebarrierrec
 zerve

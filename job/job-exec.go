@@ -74,7 +74,7 @@ func (j *JobInfo) runJob(jobs *JobManagement) error {
 	// optRun := fmt.Sprintf("-c %s -output %s -log stdout -debug", mainJson, string(j.folderPath))
 	argRun := []string{
 		"-c", mainJson,
-		"-jobid", fmt.Sprintf("job%04d", j.XjobId),
+		"-jobid", j.IdString(),
 		"-output", string(j.XfolderPath),
 		"-log", "stdout",
 		"-debug",

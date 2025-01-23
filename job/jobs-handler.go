@@ -37,16 +37,18 @@ func (jobs *JobManagement) ParseJobs() {
 
 	// look for lock file in each job folder found
 	for _, jFolder := range jobsRaw {
+		strId := jFolder[len(jFolder)-7:]
+		intId, _ := strconv.Atoi(jFolder[len(jFolder)-4:])
 		absFolder, _ := filepath.Abs(jFolder)
 		tmp := JobInfo{
-			XfolderPath:   URL(jFolder),
-			XlockFilePath: URL(filepath.Join(jFolder, jobs.LockFileName)),
-			XjobLogPath:   URL(filepath.Join(jFolder, jobs.JobLogName)),
-			Id:            URL(absFolder),
+			XfolderPath:    URL(jFolder),
+			XlockFilePath:  URL(filepath.Join(jFolder, jobs.LockFileName)),
+			XjobLogPath:    URL(filepath.Join(jFolder, jobs.LogsFolder, strId+".log")),
+			XstudioLogPath: URL(filepath.Join(jFolder, jobs.LogsFolder, jobs.LogStudioName)),
+			Id:             URL(absFolder),
 		}
 		status, meta, start, end, age, err := tmp.ReadLockFileMetadata()
 		if err == nil {
-			intId, _ := strconv.Atoi(jFolder[len(jFolder)-4:])
 			tmp.XjobId = intId
 			tmp.Status = JobStatusEnum(status)
 			tmp.Xmeta = meta
