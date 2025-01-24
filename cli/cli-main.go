@@ -30,6 +30,8 @@ var LogLevelDebug = false
 var ProductionLogging = false
 var ShowDashboard = true
 
+var Port=3001
+
 // mainCmd starts the controller after flags have been parsed.
 var mainCmd = &cobra.Command{
 	Use:   "opentsg-ctl-watchfolder",
@@ -97,7 +99,7 @@ var mainCmd = &cobra.Command{
 		// if we have to show the Dashboard then start the server
 		if ShowDashboard {
 			slog.Debug("root command: show dashboard")
-			dash.ShowDashboard(3001, eFs, jobs, ProductionLogging)
+			dash.ShowDashboard(3003, eFs, jobs, ProductionLogging)
 		}
 
 		//init the jobs to fast start the polling
@@ -143,7 +145,8 @@ func init() {
 	mainCmd.PersistentFlags().BoolVarP(&ProductionLogging, "production", "P", false, "production mode - JSON logging at error / info level")
 
 	//dashboard flag
-	mainCmd.PersistentFlags().BoolVarP(&ShowDashboard, "dashboard", "d", true, "show dashboard on port 3001")
+	mainCmd.PersistentFlags().BoolVarP(&ShowDashboard, "dashboard", "d", true, "show dashboard, default port 3001")
+	mainCmd.PersistentFlags().IntVarP(&Port, "port", "p", 3001, "show dashboard, default port 3001")
 
 	// config file flags
 	// mainCmd.PersistentFlags().StringVarP(&clCmd.ConfigFilePath, "config", "c", "", "clog -c myClogfig.yaml   # clog Core Cat clogrc/core/clog.clConfig.yaml > myClogfig.yaml")

@@ -30,13 +30,12 @@ func ShowDashboard(port int, eFs embed.FS, jobsToView *job.JobManagement, isProd
 	r.Use(middleware.Recoverer)
 
 	//set up routes
-	r.Get("/dash", RouteJobs)
-	r.Get("/dash/", RouteJobs)
-	r.Get("/dash/{jobId}", RouteNodeLogs)
-	r.Get("/dash/{jobId}/studio-logs", RouteStudioLogs)
+	r.Get("/", RouteJobs)
+	r.Get("/{jobId}", RouteNodeLogs)
+	r.Get("/{jobId}/studio-logs", RouteStudioLogs)
 
 	// simple embedded file server for logs & static images, pages etc.
-	embedFileServer(r, eFs, "/", "www")
+	embedFileServer(r, eFs, "/r/", "www")
 	listenAddr := fmt.Sprintf("%s:%d", "", port)
 	// run the server in a thread
 	go http.ListenAndServe(listenAddr, r)

@@ -26,6 +26,8 @@
             "args": [
                 "--debug",
                 "--dashboard",
+                "--port",
+                "3003",
                 "--folder",
                 "~/gr/otsg-marimo/src/jobs"
             ]
