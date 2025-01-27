@@ -1,0 +1,24 @@
+{{define "job-list"}}
+{{range .}}
+{{template "job-data" .}}
+{{end}}
+{{end}}
+{{define "job-data"}}
+<tr>
+  <td><code>job{{printf "%04d" .J.XjobId}}</code>
+    {{- if .NodeLog }}
+    {{$url := printf "job%04d" .J.XjobId}}
+    <a href={{$url}}>🪵</a>
+    {{ end -}}
+    {{- if .StudioLog }}
+    {{$url := printf "job%04d/studio-logs" .J.XjobId}}
+    <a href={{$url}}>ℹ️</a>{{ end -}}
+  </td>
+  <td><code>{{.J.Status}}</code></td>
+  <td><small>{{.J.ActualStartDate}}</small></td>
+  <td><small>{{.J.ActualEndDate}}</small></td>
+  <td><small>{{.J.XDurationStr}}</small></td>
+  <td><small>{{.J.XAgeStr}}</small></td>
+  <td>{{.J.Xmeta}}</td>
+</tr>
+{{end}}
