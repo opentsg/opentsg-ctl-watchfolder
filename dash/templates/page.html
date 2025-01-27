@@ -4,14 +4,15 @@
 
 <head>
   {{block "head" .}}
-  <title>Page Template</title>
+  <!-- <link rel="icon" type="image/x-icon" href="/img/favicon.png"> -->
+  <title>{{.Title}}</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="keywords" content="opentsg, dashboard, picniccss">
   <meta name="description" content="A simple opentsg job dashboard">
   <link rel="stylesheet" href="/r/picnic.min.css">
   <link rel="stylesheet" href="/r/site.css">
-  <link rel="icon" href="/r/img/favicon-32x32.png" type="image/png">
+  <link rel="icon" href="/r/img/favicon.png" type="image/png">
   {{end}}
   {{block "styles" .}}{{end}}
 </head>

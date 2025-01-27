@@ -39,6 +39,7 @@ func RouteJobs(w http.ResponseWriter, r *http.Request) {
 
 	jobList := []TDJob{}
 	jobsData := TDJobsMain{
+		Title:      "Jobs (opentsg-studio)",
 		Folder:     jobs.Folder,
 		JobCount:   len(jobs.Known),
 		QueueDepth: len(jobs.Queue),

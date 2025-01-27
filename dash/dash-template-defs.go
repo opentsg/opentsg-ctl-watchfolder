@@ -14,6 +14,7 @@ type TDErr struct {
 }
 
 type TDJobsMain struct {
+	Title	          string
 	Folder          string
 	JobCount        int
 	QueueDepth      int
@@ -29,15 +30,15 @@ type TDJob struct {
 }
 
 type TDNodeLogs struct {
-	L         *job.NodeLogLines
 	Title     string
 	LogSource string
+	L         *job.NodeLogLines
 }
 
 type TDStudioLogs struct {
-	L         *[]string
 	Title     string
 	LogSource string
+	L         *[]string
 }
 
 // This struct is for managing all the templates used for rendering. A template

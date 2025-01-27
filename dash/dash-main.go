@@ -8,6 +8,7 @@ package dash
 import (
 	"embed"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -37,6 +38,8 @@ func ShowDashboard(port int, eFs embed.FS, jobsToView *job.JobManagement, isProd
 	// simple embedded file server for logs & static images, pages etc.
 	embedFileServer(r, eFs, "/r/", "www")
 	listenAddr := fmt.Sprintf("%s:%d", "", port)
+	slog.Info(fmt.Sprintf("Listening on port %d", port))
+
 	// run the server in a thread
 	go http.ListenAndServe(listenAddr, r)
 }

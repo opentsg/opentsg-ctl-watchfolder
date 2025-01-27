@@ -146,8 +146,5 @@ func init() {
 
 	//dashboard flag
 	mainCmd.PersistentFlags().BoolVarP(&ShowDashboard, "dashboard", "d", true, "show dashboard, default port 3001")
-	mainCmd.PersistentFlags().IntVarP(&Port, "port", "p", 3001, "show dashboard, default port 3001")
-
-	// config file flags
-	// mainCmd.PersistentFlags().StringVarP(&clCmd.ConfigFilePath, "config", "c", "", "clog -c myClogfig.yaml   # clog Core Cat clogrc/core/clog.clConfig.yaml > myClogfig.yaml")
+	mainCmd.PersistentFlags().IntVarP(&Port, "port", "p", 3003, "show dashboard, default port 3001")
 }
