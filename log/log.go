@@ -1,4 +1,4 @@
-// Copyright ©2022-2024 Mr MXF   info@mrmxf.com
+// Copyright ©2022-2025 Mr MXF   info@mrmxf.com
 // BSD-3-Clause License   https://opensource.org/license/bsd-3-clause/
 
 package log
