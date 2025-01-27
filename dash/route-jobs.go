@@ -40,6 +40,7 @@ func RouteJobs(w http.ResponseWriter, r *http.Request) {
 	jobList := []TDJob{}
 	jobsData := TDJobsMain{
 		Title:      "Jobs (opentsg-studio)",
+		Ptr:        "", // relative path to the root folder nothing
 		Folder:     jobs.Folder,
 		JobCount:   len(jobs.Known),
 		QueueDepth: len(jobs.Queue),

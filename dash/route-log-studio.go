@@ -37,6 +37,7 @@ func RouteStudioLogs(w http.ResponseWriter, r *http.Request) {
 	logs := j.GetStudioLogs()
 	data := TDStudioLogs{
 		Title:     jobId + " logs (opentsg-studio)",
+		Ptr:        "../", // relative path to the root folder ..
 		L:         logs,
 		LogSource: path,
 	}

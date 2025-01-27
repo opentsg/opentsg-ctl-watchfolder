@@ -59,6 +59,7 @@ func RouteNodeLogs(w http.ResponseWriter, r *http.Request) {
 	logs := j.GetNodeLogs()
 	data := TDNodeLogs{
 		Title:     jobId + " logs (opentsg-node)",
+		Ptr:        "../", // relative path to the root folder ..
 		L:         logs,
 		LogSource: path,
 	}

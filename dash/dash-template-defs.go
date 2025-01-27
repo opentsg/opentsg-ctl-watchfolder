@@ -15,6 +15,7 @@ type TDErr struct {
 
 type TDJobsMain struct {
 	Title	          string
+	Ptr             string // this is the path to the root folder from the route
 	Folder          string
 	JobCount        int
 	QueueDepth      int
@@ -31,12 +32,14 @@ type TDJob struct {
 
 type TDNodeLogs struct {
 	Title     string
+	Ptr             string // this is the path to the root folder from the route
 	LogSource string
 	L         *job.NodeLogLines
 }
 
 type TDStudioLogs struct {
 	Title     string
+	Ptr             string // this is the path to the root folder from the route
 	LogSource string
 	L         *[]string
 }
