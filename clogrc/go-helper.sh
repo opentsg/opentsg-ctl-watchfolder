@@ -8,9 +8,6 @@
 fInfo "Using Docker $cF$(docker system info 2>/dev/null| grep Name)"
 fInfo "Using ko version $cF$(ko version 2>/dev/null||echo "not installed")"
 
-# ensure we have logged into docker (docker doesn't store state so this is idempotent)
-#echo "$DOCKER_PAT" | docker login -u "$DOCKER_USR" --password-stdin
-
 # -----------------------------------------------------------------------------
 
 # You can get the semver path with the following command:
@@ -129,4 +126,12 @@ fDockerLogin () {
   fInfo "Using Docker $cF$(docker system info 2>/dev/null| grep Name)"
   # ensure we have logged into docker (docker doesn't store state so this is idempotent)
   echo "$DOCKER_PAT" | docker login -u "$DOCKER_USR" --password-stdin
+}
+
+# -----------------------------------------------------------------------------
+fShouldMake(){
+  local test="$1"
+  # return err if $1 is not in the MAKE env var
+  [[ "${MAKE#*"$test"}" == "$MAKE" ]] && return 1
+  return 0
 }
