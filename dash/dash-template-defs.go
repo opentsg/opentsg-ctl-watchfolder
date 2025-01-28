@@ -73,12 +73,10 @@ var tpl = DashTemplates{
 	},
 	nodeLogsSrc: []string{
 		"dash/templates/page.html",
-		"dash/templates/head.html",
 		"dash/templates/main-logs-node.html",
 	},
 	studioLogsSrc: []string{
 		"dash/templates/page.html",
-		"dash/templates/head.html",
 		"dash/templates/main-logs-studio.html",
 	},
 }
