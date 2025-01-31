@@ -1,5 +1,6 @@
 # Copyright ©2022-2024 Mr MXF   info@mrmxf.com
 # BSD-3-Clause License   https://opensource.org/license/bsd-3-clause/
 # code names here: https://www.detective-store.com/content/glossary-of-terms-38
+- {version: "0.5.8", date: 2025-02-05, codename: ADC, note: nats-update}
 - {version: "0.1.0", date: 2025-01-27, codename: ADC, note: working in k8}
 - {version: "0.0.9", date: 2024-12-12, codename: ADC, note: first rc docker}
