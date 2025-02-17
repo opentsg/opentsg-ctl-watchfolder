@@ -23,5 +23,20 @@
 
 snippets:
   git:
-    vcode: cat cli/releases.yaml|grep version|head -1|grep -oE '[0-9]+\.[0-9]+\.[0-9]'
+    vcode: yq -r '.[0].version' releases.yaml
+    tag:
+      ref: yq -r '.[0].version' releases.yaml
+  project:
+    config: |
+      export PROJECT="$(basename $(pwd))" 
+      export vCODE=$(clog git vcode)
+      export vCodeType="Golang"
+      export bBASE="opentsg"
+      export bHASH="$(clog git hash head)"
+      export bMSG=$(clog git message latest)
+      # add a suffix to any build not on the main branch
+      export bSUFFIX="$(clog git branch)" && [[ "$bSUFFIX"=="main" ]] && bSUFFIX=""
+      # keep the private msg stuff in the mrmxf namespace. Only use opentsg for
+      # public stuff from now.
+      export bDOCKER_NS="mrmxf"
   testctl:  go run . --production --dashboard --folder ~/gr/otsg-marimo/src/jobs/

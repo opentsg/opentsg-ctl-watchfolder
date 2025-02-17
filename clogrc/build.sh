@@ -8,14 +8,14 @@
 #        |_|                            |___/
 # ------------------------------------------------------------------------------
 # load build config and script helpers
-[ -f clogrc/_cfg.sh   ] && source clogrc/_cfg.sh         # configure project
+eval "$(clog Source project config)"                            # configure project
 eval "$(clog Inc)"                                       # include clog helpers (sh, zsh & bash)
-helper="$(dirname $0)/go-helper.sh" && source "$helper"  # build helpers
+eval "$(clog Cat core/sh/help-golang.sh)"
 
 # highlight colors
 cLnx="$cC";cMac="$cW";cWin="$cE";cArm="$cS";cAmd="$cH"
 
-fInfo "Building Project$cS $bPROJECT $cT using $helper"
+fInfo "Building Project$cS $PROJECT $cT using$cC clog Cat$cF core/sh/help-golang.sh"
 
 #clog Check
 [ $? -gt 0 ] && exit 1
