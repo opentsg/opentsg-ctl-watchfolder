@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# clog>  build
-# short> build & inject metadata into clog
+# clog>  build # build & inject metadata into clog
 # extra> push main executables into tmp/
 #                             _                            _     _                         _          _       __         _      _
 #   ___   _ __   ___   _ _   | |_   ___  __ _   ___   __  | |_  | |  ___  __ __ __  __ _  | |_   __  | |_    / _|  ___  | |  __| |  ___   _ _
