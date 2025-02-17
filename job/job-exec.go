@@ -16,7 +16,7 @@ import (
 )
 
 var tsgApp = "opentsg-node"
-var optVersion = "-version"
+var optVersion = "--version"
 
 func (j *JobInfo) getVersion() (version string, errMsg string) {
 	var outBuf bytes.Buffer
@@ -74,10 +74,9 @@ func (j *JobInfo) runJob(jobs *JobManagement) error {
 	// optRun := fmt.Sprintf("-c %s -output %s -log stdout -debug", mainJson, string(j.folderPath))
 	argRun := []string{
 		"-c", mainJson,
-		"-jobid", j.IdString(),
-		"-output", string(j.XfolderPath),
-		"-log", "stdout",
-		"-debug",
+		"--jobid", j.IdString(),
+		"--output", string(j.XfolderPath),
+		"--debug",
 	}
 	cmd := exec.Command(tsgApp, argRun...)
 
