@@ -31,9 +31,15 @@ func (j *JobInfo) RunningJob(jobs *JobManagement) {
 
 	logs := j.GetNodeLogs()
 
-	// update the status of the running job
+	// update the status of the running job if we have a frames total
+	if logs.FrameTotal > 0 {
+
 	progress := (100 * logs.FrameCount) / logs.FrameTotal
 	meta := fmt.Sprintf("%d %d %d", progress, logs.FrameCount, logs.FrameTotal)
 	j.SetJobStatus(RUNNING, meta)
 	slog.Debug(fmt.Sprintf("%s %s", _dbg, meta))
+	}else{
+		j.SetJobStatus(RUNNING, "")
+		slog.Debug(fmt.Sprintf("%s %s", _dbg, "no frame count"))
+	}
 }
